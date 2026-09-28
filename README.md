@@ -858,6 +858,12 @@ attio thread get <thread-id>
 ```bash
 attio self
 ```
+
+### Emails
+
+```bash
+attio email list --linked-object people --linked-record-ids <record-id>
+```
 ```
 
 **Examples:**

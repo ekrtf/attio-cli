@@ -3,6 +3,7 @@
   "coveredTags": [
     "Attributes",
     "Comments",
+    "Emails",
     "Entries",
     "Lists",
     "Meetings",
@@ -18,7 +19,6 @@
   "ignoredTags": {
     "Activities": "Activity logging is outside this CLI.",
     "Activity records": "Activity records are outside this CLI.",
-    "Emails": "Email sync is outside this CLI.",
     "Files": "File upload is outside this CLI.",
     "Call recordings": "Call recordings are outside this CLI.",
     "Transcripts": "Transcripts are outside this CLI.",
@@ -311,6 +311,10 @@
     "GET /v2/self": {
       "status": "implemented",
       "fingerprint": ""
+    },
+    "GET /v2/emails": {
+      "status": "implemented",
+      "fingerprint": "query:cursor:optional\nquery:domain:optional\nquery:exclude_automated_participants:optional\nquery:limit:optional\nquery:linked_object:optional\nquery:linked_record_ids:optional\nquery:participants:optional\nquery:sent_after:optional\nquery:sent_before:optional"
     }
   }
 }
