@@ -163,6 +163,35 @@ export class ListEndpoints {
     return validate(ListEntrySchema, dataResponse.data);
   }
 
+  async replaceEntry(
+    listSlug: string,
+    entryId: string,
+    data: { data: { entry_values: Record<string, unknown> } }
+  ): Promise<ListEntry> {
+    const response = await this.client.put(
+      `/lists/${listSlug}/entries/${entryId}`,
+      data
+    );
+    const dataResponse = response as { data: unknown };
+    return validate(ListEntrySchema, dataResponse.data);
+  }
+
+  async setEntryAttributeValues(
+    listSlug: string,
+    entryId: string,
+    attributeSlug: string,
+    data: { data: { values: unknown[]; replace_history: boolean } }
+  ): Promise<AttributeValueHistory[]> {
+    const response = await this.client.put(
+      `/lists/${listSlug}/entries/${entryId}/attributes/${attributeSlug}/values`,
+      data
+    );
+    const dataResponse = response as { data: unknown[] };
+    return dataResponse.data.map((item) =>
+      validate(AttributeValueHistorySchema, item)
+    );
+  }
+
   async deleteEntry(listSlug: string, entryId: string): Promise<void> {
     await this.client.delete(`/lists/${listSlug}/entries/${entryId}`);
   }

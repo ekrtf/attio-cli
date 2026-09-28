@@ -653,6 +653,10 @@ attio entry assert <list-slug> \
   --parent-object <object-slug> \
   --data <json> \
   [--format json|table|csv]
+
+# Replace an entry's values, or write one attribute's history
+attio entry replace <list-slug> <entry-id> --data '<entry-values-json>'
+attio entry set-values <list-slug> <entry-id> <attribute> --data '<json-array>' [--replace-history]
 ```
 
 **Examples:**

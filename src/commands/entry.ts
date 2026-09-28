@@ -7,6 +7,7 @@ import { formatCsv } from '../formatters/csv';
 import { validateFilterStructure } from '../utils/filter-validator';
 import { compactRecordValues } from '../utils/compact-formatter';
 import { reportError } from '../utils/cli-error';
+import { present, readJson } from './present';
 
 export function createEntryCommand(): Command {
   const entry = new Command('entry').description('Manage list entries');
@@ -412,6 +413,76 @@ export function createEntryCommand(): Command {
           } else {
             console.log(formatJson(values));
           }
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    );
+
+  entry
+    .command('replace')
+    .description('Replace the attribute values on an entry')
+    .argument('<list-slug>', 'List slug or ID')
+    .argument('<entry-id>', 'Entry ID')
+    .requiredOption('--data <json>', 'entry_values object as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (listSlug: string, entryId: string, options) => {
+      try {
+        const entryValues = readJson(options.data, '--data');
+        if (
+          typeof entryValues !== 'object' ||
+          entryValues === null ||
+          Array.isArray(entryValues)
+        ) {
+          throw new Error('--data must be a JSON object of entry values');
+        }
+        const client = new AttioClient(options.apiKey);
+        const listApi = new ListEndpoints(client);
+        const updated = await listApi.replaceEntry(listSlug, entryId, {
+          data: { entry_values: entryValues as Record<string, unknown> },
+        });
+        present(updated, options.format);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  entry
+    .command('set-values')
+    .description('Write the value history of one entry attribute')
+    .argument('<list-slug>', 'List slug or ID')
+    .argument('<entry-id>', 'Entry ID')
+    .argument('<attribute>', 'Attribute slug or ID')
+    .requiredOption(
+      '--data <json>',
+      'JSON array of {value, active_from, active_until}'
+    )
+    .option(
+      '--replace-history',
+      'Replace existing history instead of appending'
+    )
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(
+      async (listSlug: string, entryId: string, attribute: string, options) => {
+        try {
+          const values = readJson(options.data, '--data');
+          if (!Array.isArray(values)) {
+            throw new Error('--data must be a JSON array');
+          }
+          const client = new AttioClient(options.apiKey);
+          const listApi = new ListEndpoints(client);
+          const written = await listApi.setEntryAttributeValues(
+            listSlug,
+            entryId,
+            attribute,
+            {
+              data: {
+                values,
+                replace_history: Boolean(options.replaceHistory),
+              },
+            }
+          );
+          present(written, options.format);
         } catch (error) {
           reportError(error);
         }
