@@ -240,6 +240,9 @@ attio object update <slug> [--api-slug <slug>] [--singular <noun>] [--plural <no
 # Delete a custom object
 attio object delete <slug>
 
+# List saved views
+attio object views <slug> [--show-archived] [--limit <n>] [--cursor <cursor>]
+
 # List attributes for an object
 attio object attributes <object-slug> [--format json|table|csv]
 
@@ -566,6 +569,9 @@ attio list update <list-slug> \
   [--name "New Name"] \
   [--workspace-access full-access|read-and-write|read-only] \
   [--format json|table|csv]
+
+# List saved views
+attio list views <list-slug> [--show-archived] [--limit <n>] [--cursor <cursor>]
 
 # List attributes for a list
 attio list attributes <list-slug> [--format json|table|csv]

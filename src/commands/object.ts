@@ -6,6 +6,7 @@ import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
 import { reportError } from '../utils/cli-error';
+import { present } from './present';
 
 export function createObjectCommand(): Command {
   const object = new Command('object').description(
@@ -176,6 +177,29 @@ export function createObjectCommand(): Command {
         const objectApi = new ObjectEndpoints(client);
         await objectApi.deleteObject(slug);
         console.log(`Object ${slug} deleted successfully`);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  object
+    .command('views')
+    .description('List saved views for an object')
+    .argument('<slug>', 'Object slug or ID')
+    .option('--show-archived', 'Include archived views')
+    .option('--limit <number>', 'Maximum views to return', parseInt)
+    .option('--cursor <cursor>', 'Pagination cursor')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const objectApi = new ObjectEndpoints(client);
+        const page = await objectApi.listViews(slug, {
+          showArchived: options.showArchived,
+          limit: options.limit,
+          cursor: options.cursor,
+        });
+        present(page.items, options.format, page.nextCursor);
       } catch (error) {
         reportError(error);
       }

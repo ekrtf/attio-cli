@@ -6,6 +6,7 @@ import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
 import { reportError } from '../utils/cli-error';
+import { present } from './present';
 
 function isValidSnakeCase(str: string): boolean {
   // Valid snake_case: lowercase letters, numbers, and underscores only
@@ -203,6 +204,29 @@ export function createListCommand(): Command {
         } else {
           console.log(formatJson(listData));
         }
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  list
+    .command('views')
+    .description('List saved views for a list')
+    .argument('<list-slug>', 'List slug or ID')
+    .option('--show-archived', 'Include archived views')
+    .option('--limit <number>', 'Maximum views to return', parseInt)
+    .option('--cursor <cursor>', 'Pagination cursor')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (listSlug: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const listApi = new ListEndpoints(client);
+        const page = await listApi.listViews(listSlug, {
+          showArchived: options.showArchived,
+          limit: options.limit,
+          cursor: options.cursor,
+        });
+        present(page.items, options.format, page.nextCursor);
       } catch (error) {
         reportError(error);
       }

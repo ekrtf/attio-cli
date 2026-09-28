@@ -85,8 +85,8 @@
       "fingerprint": "path:attribute:required\npath:entry_id:required\npath:list:required\nquery:limit:optional\nquery:offset:optional\nquery:show_historic:optional"
     },
     "GET /v2/lists/{list}/views": {
-      "status": "deferred",
-      "reason": "Saved views are not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:list:required\nquery:cursor:optional\nquery:limit:optional\nquery:show_archived:optional"
     },
     "GET /v2/meetings": {
       "status": "implemented",
@@ -125,8 +125,8 @@
       "reason": "Listing the lists a record belongs to is not exposed by this CLI."
     },
     "GET /v2/objects/{object}/views": {
-      "status": "deferred",
-      "reason": "Saved views are not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:object:required\nquery:cursor:optional\nquery:limit:optional\nquery:show_archived:optional"
     },
     "GET /v2/tasks": {
       "status": "implemented",

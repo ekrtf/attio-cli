@@ -11,6 +11,7 @@ import {
   Attribute,
 } from '../types';
 import { validate } from '../../utils/validation';
+import { Page, readPage } from '../response';
 import { AttributeEndpoints } from './attributes';
 
 export interface ListOptions {
@@ -92,6 +93,18 @@ export class ListEndpoints {
       lists = lists.slice(0, options.limit);
     }
     return lists;
+  }
+
+  async listViews(
+    listSlug: string,
+    options?: { showArchived?: boolean; limit?: number; cursor?: string }
+  ): Promise<Page> {
+    const params: Record<string, unknown> = {};
+    if (options?.showArchived) params.show_archived = options.showArchived;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.cursor) params.cursor = options.cursor;
+    const response = await this.client.get(`/lists/${listSlug}/views`, params);
+    return readPage(response);
   }
 
   async getList(listSlug: string): Promise<List> {
