@@ -81,13 +81,17 @@ export class ListEndpoints {
   }
 
   async listLists(options?: ListOptions): Promise<List[]> {
-    const params: Record<string, unknown> = {};
-    if (options?.limit) params.limit = options.limit;
-    if (options?.offset) params.offset = options.offset;
-
-    const response = await this.client.get('/lists', params);
+    const response = await this.client.get('/lists');
     const validated = validate(ListsResponseSchema, response);
-    return validated.data;
+
+    let lists = validated.data;
+    if (options?.offset !== undefined) {
+      lists = lists.slice(options.offset);
+    }
+    if (options?.limit !== undefined) {
+      lists = lists.slice(0, options.limit);
+    }
+    return lists;
   }
 
   async getList(listSlug: string): Promise<List> {
@@ -114,13 +118,21 @@ export class ListEndpoints {
   }
 
   async getEntry(listSlug: string, entryId: string): Promise<ListEntry> {
-    const response = await this.client.get(`/lists/${listSlug}/entries/${entryId}`);
+    const response = await this.client.get(
+      `/lists/${listSlug}/entries/${entryId}`
+    );
     const dataResponse = response as { data: unknown };
     return validate(ListEntrySchema, dataResponse.data);
   }
 
-  async createEntry(listSlug: string, entryData: CreateEntryData): Promise<ListEntry> {
-    const response = await this.client.post(`/lists/${listSlug}/entries`, entryData);
+  async createEntry(
+    listSlug: string,
+    entryData: CreateEntryData
+  ): Promise<ListEntry> {
+    const response = await this.client.post(
+      `/lists/${listSlug}/entries`,
+      entryData
+    );
     const dataResponse = response as { data: unknown };
     return validate(ListEntrySchema, dataResponse.data);
   }
@@ -142,7 +154,10 @@ export class ListEndpoints {
     await this.client.delete(`/lists/${listSlug}/entries/${entryId}`);
   }
 
-  async assertEntry(listSlug: string, data: AssertEntryData): Promise<ListEntry> {
+  async assertEntry(
+    listSlug: string,
+    data: AssertEntryData
+  ): Promise<ListEntry> {
     const response = await this.client.put(`/lists/${listSlug}/entries`, data);
     const dataResponse = response as { data: unknown };
     return validate(ListEntrySchema, dataResponse.data);
@@ -165,7 +180,9 @@ export class ListEndpoints {
     );
 
     const dataResponse = response as { data: unknown[] };
-    return dataResponse.data.map(item => validate(AttributeValueHistorySchema, item));
+    return dataResponse.data.map((item) =>
+      validate(AttributeValueHistorySchema, item)
+    );
   }
 
   async createList(data: CreateListData): Promise<List> {

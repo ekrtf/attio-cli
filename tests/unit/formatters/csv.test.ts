@@ -56,6 +56,17 @@ describe('formatCsv', () => {
     expect(result).toContain('John');
   });
 
+  it('should strip carriage returns that rewrite the terminal line', () => {
+    const result = formatCsv([{ title: 'Secret\rHARMLESS' }]);
+    expect(result).not.toContain('\r');
+    expect(result).toContain('SecretHARMLESS');
+  });
+
+  it('should neutralize spreadsheet formulas', () => {
+    const result = formatCsv([{ name: '=HYPERLINK("http://evil.example")' }]);
+    expect(result).toContain("'=HYPERLINK");
+  });
+
   it('should return empty string for empty array', () => {
     const data: unknown[] = [];
     const result = formatCsv(data);

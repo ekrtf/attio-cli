@@ -6,6 +6,7 @@ import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
 import { validateFilterStructure } from '../utils/filter-validator';
 import { compactRecordValues } from '../utils/compact-formatter';
+import { reportError } from '../utils/cli-error';
 
 export function createRecordCommand(): Command {
   const record = new Command('record').description(
@@ -19,8 +20,14 @@ export function createRecordCommand(): Command {
     .argument('<object>', 'Object slug (e.g., people, companies, deals)')
     .option('--limit <number>', 'Maximum records to return', parseInt)
     .option('--offset <number>', 'Number of records to skip', parseInt)
-    .option('--filter <json>', 'Filter query as JSON (e.g., \'{"email_addresses":{"email_address":{"$contains":"@example.com"}}}\')')
-    .option('--sort <json>', 'Sort specification as JSON (e.g., \'[{"attribute":"name","direction":"asc"}]\')')
+    .option(
+      '--filter <json>',
+      'Filter query as JSON (e.g., \'{"email_addresses":{"email_address":{"$contains":"@example.com"}}}\')'
+    )
+    .option(
+      '--sort <json>',
+      'Sort specification as JSON (e.g., \'[{"attribute":"name","direction":"asc"}]\')'
+    )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .option('--verbose', 'Show full API response with metadata')
     .action(async (objectSlug: string, options) => {
@@ -63,7 +70,9 @@ export function createRecordCommand(): Command {
             }
           } catch (error) {
             console.error('Error: Invalid JSON in --sort option');
-            console.error('Example: --sort \'[{"attribute":"name","direction":"asc"}]\'');
+            console.error(
+              'Example: --sort \'[{"attribute":"name","direction":"asc"}]\''
+            );
             process.exit(1);
           }
         }
@@ -99,11 +108,7 @@ export function createRecordCommand(): Command {
           console.log(formatJson(displayRecords));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -148,11 +153,7 @@ export function createRecordCommand(): Command {
           console.log(formatJson(displayRecord));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -198,11 +199,7 @@ export function createRecordCommand(): Command {
           console.log(formatJson(displayRecord));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -251,11 +248,7 @@ export function createRecordCommand(): Command {
           console.log(formatJson(displayRecord));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -273,11 +266,7 @@ export function createRecordCommand(): Command {
         await recordApi.deleteRecord(objectSlug, recordId);
         console.log(`Record ${recordId} deleted successfully`);
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -285,7 +274,10 @@ export function createRecordCommand(): Command {
     .command('assert')
     .description('Assert (upsert) a record using matching attribute')
     .argument('<object>', 'Object slug (e.g., people, companies, deals)')
-    .requiredOption('--matching-attribute <slug>', 'Attribute to match on (e.g., email_addresses)')
+    .requiredOption(
+      '--matching-attribute <slug>',
+      'Attribute to match on (e.g., email_addresses)'
+    )
     .requiredOption('--data <json>', 'Record data as JSON')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .option('--verbose', 'Show full API response with metadata')
@@ -299,7 +291,9 @@ export function createRecordCommand(): Command {
           data = JSON.parse(options.data);
         } catch (error) {
           console.error('Error: Invalid JSON in --data option');
-          console.error('Example: --data \'{"email_addresses":[{"email_address":"test@example.com"}]}\'');
+          console.error(
+            'Example: --data \'{"email_addresses":[{"email_address":"test@example.com"}]}\''
+          );
           process.exit(1);
         }
 
@@ -334,11 +328,7 @@ export function createRecordCommand(): Command {
           console.log(formatJson(displayRecord));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -347,19 +337,25 @@ export function createRecordCommand(): Command {
 
 // Helper to flatten record values for display in tables
 // Note: Values should already be compacted via compactRecordValues before calling this
-function flattenValues(values: Record<string, unknown>): Record<string, string> {
+function flattenValues(
+  values: Record<string, unknown>
+): Record<string, string> {
   const flattened: Record<string, string> = {};
 
   for (const [key, value] of Object.entries(values)) {
     if (value === null || value === undefined) {
       // Null values (from empty attributes) → display as empty string
       flattened[key] = '';
-    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    } else if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
       // Primitive values → convert to string
       flattened[key] = String(value);
     } else if (Array.isArray(value)) {
       // Arrays → join with commas for readability
-      flattened[key] = value.map(v => String(v)).join(', ');
+      flattened[key] = value.map((v) => String(v)).join(', ');
     } else if (typeof value === 'object') {
       // Objects → stringify
       flattened[key] = JSON.stringify(value);

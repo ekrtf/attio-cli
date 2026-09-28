@@ -38,6 +38,7 @@ export interface UpdateAttributeData {
     description?: string;
     is_required?: boolean;
     is_unique?: boolean;
+    is_archived?: boolean;
     config?: Record<string, unknown>;
   };
 }
@@ -145,16 +146,6 @@ export class AttributeEndpoints {
     return validate(AttributeSchema, dataResponse.data);
   }
 
-  async deleteAttribute(
-    target: 'objects' | 'lists',
-    identifier: string,
-    attributeSlug: string
-  ): Promise<void> {
-    await this.client.delete(
-      `/${target}/${identifier}/attributes/${attributeSlug}`
-    );
-  }
-
   // Select Options
   async listSelectOptions(
     target: 'objects' | 'lists',
@@ -204,17 +195,6 @@ export class AttributeEndpoints {
     return validate(SelectOptionSchema, dataResponse.data);
   }
 
-  async deleteSelectOption(
-    target: 'objects' | 'lists',
-    identifier: string,
-    attributeSlug: string,
-    optionId: string
-  ): Promise<void> {
-    await this.client.delete(
-      `/${target}/${identifier}/attributes/${attributeSlug}/options/${optionId}`
-    );
-  }
-
   // Statuses
   async listStatuses(
     target: 'objects' | 'lists',
@@ -262,17 +242,6 @@ export class AttributeEndpoints {
     );
     const dataResponse = response as { data: unknown };
     return validate(StatusSchema, dataResponse.data);
-  }
-
-  async deleteStatus(
-    target: 'objects' | 'lists',
-    identifier: string,
-    attributeSlug: string,
-    statusId: string
-  ): Promise<void> {
-    await this.client.delete(
-      `/${target}/${identifier}/attributes/${attributeSlug}/statuses/${statusId}`
-    );
   }
 
   // Convenience method - list attributes with their values (Phase 2)

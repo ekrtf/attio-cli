@@ -5,6 +5,7 @@ import { AttributeEndpoints } from '../api/endpoints/attributes';
 import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
+import { reportError } from '../utils/cli-error';
 
 export function createObjectCommand(): Command {
   const object = new Command('object').description(
@@ -38,11 +39,7 @@ export function createObjectCommand(): Command {
           console.log(formatJson(objects));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -76,11 +73,7 @@ export function createObjectCommand(): Command {
           console.log(formatJson(obj));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -113,11 +106,7 @@ export function createObjectCommand(): Command {
           console.log(formatJson(attributes));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -168,11 +157,7 @@ export function createObjectCommand(): Command {
           console.log(formatJson(attributes));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 

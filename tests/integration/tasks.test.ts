@@ -112,7 +112,9 @@ describe('Tasks Integration Tests', () => {
         data: {
           content: 'Integration test task - please complete by end of week',
           format: 'plaintext' as const,
-          deadline_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+          deadline_at: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+          ).toISOString(), // 7 days from now
           is_completed: false,
           linked_records: [
             {
@@ -162,7 +164,9 @@ describe('Tasks Integration Tests', () => {
       const updateData = {
         data: {
           is_completed: true,
-          deadline_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+          deadline_at: new Date(
+            Date.now() + 14 * 24 * 60 * 60 * 1000
+          ).toISOString(), // 14 days from now
         },
       };
 
@@ -228,9 +232,7 @@ describe('Tasks Integration Tests', () => {
 
   describe('Error Handling', () => {
     it('should throw error for invalid task ID', async () => {
-      await expect(
-        taskApi.getTask('invalid-task-id-12345')
-      ).rejects.toThrow();
+      await expect(taskApi.getTask('invalid-task-id-12345')).rejects.toThrow();
     });
   });
 });

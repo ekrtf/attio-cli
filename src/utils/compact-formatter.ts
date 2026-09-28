@@ -85,7 +85,7 @@ function extractCompactValue(value: unknown): unknown {
   // Extract compact representation for each value in array
   const compactValues = value
     .map(extractSingleValue)
-    .filter(v => v !== null && v !== undefined);
+    .filter((v) => v !== null && v !== undefined);
 
   if (compactValues.length === 0) {
     return null;
@@ -157,11 +157,9 @@ function extractSingleValue(item: unknown): unknown {
 
     // Location - format from locality, region, country_code
     case 'location': {
-      const locationParts = [
-        obj.locality,
-        obj.region,
-        obj.country_code
-      ].filter(Boolean);
+      const locationParts = [obj.locality, obj.region, obj.country_code].filter(
+        Boolean
+      );
       return locationParts.length > 0 ? locationParts.join(', ') : null;
     }
 

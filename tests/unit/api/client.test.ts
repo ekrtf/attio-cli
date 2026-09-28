@@ -25,6 +25,8 @@ describe('AttioClient', () => {
           'Content-Type': 'application/json',
         },
         timeout: 30000,
+        maxRedirects: 0,
+        allowAbsoluteUrls: false,
       });
     });
 

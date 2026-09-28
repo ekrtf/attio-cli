@@ -41,11 +41,7 @@ describe('Query Helpers', () => {
     });
 
     it('should work with custom attributes', () => {
-      const result = filterContains(
-        'custom_notes_field',
-        'value',
-        'important'
-      );
+      const result = filterContains('custom_notes_field', 'value', 'important');
 
       expect(result).toEqual({
         custom_notes_field: {

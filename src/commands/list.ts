@@ -5,6 +5,7 @@ import { AttributeEndpoints } from '../api/endpoints/attributes';
 import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
+import { reportError } from '../utils/cli-error';
 
 function isValidSnakeCase(str: string): boolean {
   // Valid snake_case: lowercase letters, numbers, and underscores only
@@ -46,11 +47,7 @@ export function createListCommand(): Command {
           console.log(formatJson(lists));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -84,11 +81,7 @@ export function createListCommand(): Command {
           console.log(formatJson(listData));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -97,15 +90,24 @@ export function createListCommand(): Command {
     .description('Create a new list')
     .requiredOption('--api-slug <slug>', 'API slug for the list')
     .requiredOption('--name <name>', 'Display name for the list')
-    .requiredOption('--parent-object <object>', 'Parent object slug (e.g., people, companies)')
-    .option('--workspace-access <level>', 'Access level (full-access|read-and-write|read-only)', 'full-access')
+    .requiredOption(
+      '--parent-object <object>',
+      'Parent object slug (e.g., people, companies)'
+    )
+    .option(
+      '--workspace-access <level>',
+      'Access level (full-access|read-and-write|read-only)',
+      'full-access'
+    )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(async (options) => {
       try {
         // Validate api_slug is in snake_case format
         if (!isValidSnakeCase(options.apiSlug)) {
           console.error('Error: api_slug must be in snake_case format');
-          console.error('  Valid format: lowercase letters, numbers, and underscores only');
+          console.error(
+            '  Valid format: lowercase letters, numbers, and underscores only'
+          );
           console.error('  Must start with a letter');
           console.error('  Examples: my_list, test_list_1, customer_data');
           console.error(`  Invalid: ${options.apiSlug}`);
@@ -145,11 +147,7 @@ export function createListCommand(): Command {
           console.log(formatJson(listData));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -158,7 +156,10 @@ export function createListCommand(): Command {
     .description('Update a list')
     .argument('<list-slug>', 'List slug or ID')
     .option('--name <name>', 'New display name')
-    .option('--workspace-access <level>', 'New access level (full-access|read-and-write|read-only)')
+    .option(
+      '--workspace-access <level>',
+      'New access level (full-access|read-and-write|read-only)'
+    )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(async (listSlug: string, options) => {
       try {
@@ -169,11 +170,17 @@ export function createListCommand(): Command {
 
         if (options.name) data.data.name = options.name;
         if (options.workspaceAccess) {
-          data.data.workspace_access = options.workspaceAccess as 'full-access' | 'read-and-write' | 'read-only' | null;
+          data.data.workspace_access = options.workspaceAccess as
+            | 'full-access'
+            | 'read-and-write'
+            | 'read-only'
+            | null;
         }
 
         if (Object.keys(data.data).length === 0) {
-          console.error('Error: Must provide at least one field to update (--name or --workspace-access)');
+          console.error(
+            'Error: Must provide at least one field to update (--name or --workspace-access)'
+          );
           process.exit(1);
         }
 
@@ -197,11 +204,7 @@ export function createListCommand(): Command {
           console.log(formatJson(listData));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -234,11 +237,7 @@ export function createListCommand(): Command {
           console.log(formatJson(attributes));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -289,11 +288,7 @@ export function createListCommand(): Command {
           console.log(formatJson(attributes));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 

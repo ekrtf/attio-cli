@@ -1,5 +1,16 @@
 import Table from 'cli-table3';
 import { WorkspaceMember } from '../api/types';
+import { stripTerminalControls } from '../utils/terminal';
+
+function cell(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  if (typeof value === 'object') {
+    return stripTerminalControls(JSON.stringify(value));
+  }
+  return stripTerminalControls(String(value));
+}
 
 export function formatWorkspaceMembersTable(
   members: WorkspaceMember[]
@@ -19,12 +30,12 @@ export function formatWorkspaceMembersTable(
 
   members.forEach((member) => {
     table.push([
-      member.id.workspace_member_id,
-      member.first_name,
-      member.last_name,
-      member.email_address,
-      member.access_level,
-      new Date(member.created_at).toISOString(),
+      cell(member.id.workspace_member_id),
+      cell(member.first_name),
+      cell(member.last_name),
+      cell(member.email_address),
+      cell(member.access_level),
+      cell(new Date(member.created_at).toISOString()),
     ]);
   });
 
@@ -44,16 +55,7 @@ export function formatGenericTable(
   });
 
   data.forEach((item) => {
-    const row = keys.map((key) => {
-      const value = item[key];
-      if (value === null || value === undefined) {
-        return '';
-      }
-      if (typeof value === 'object') {
-        return JSON.stringify(value);
-      }
-      return String(value);
-    });
+    const row = keys.map((key) => cell(item[key]));
     table.push(row);
   });
 

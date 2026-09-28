@@ -14,11 +14,6 @@ function globToRegex(pattern: string): RegExp {
   return new RegExp(`^${escaped}$`, 'i'); // Case-insensitive, full match
 }
 
-export interface UpdateNoteResult {
-  newNote: Note;
-  oldNoteId: string;
-}
-
 export interface ListNotesOptions {
   limit?: number;
   offset?: number;
@@ -71,8 +66,8 @@ export class NoteEndpoints {
   }
 
   /**
-   * Update a note via create-then-delete (Attio API doesn't support PATCH)
-   * Creates a new note with updated fields, then deletes the original
+   * Patch the note in place. Attio's update call keeps the note id,
+   * meeting link, and fields the caller did not send.
    */
   async updateNote(
     noteId: string,
@@ -81,53 +76,39 @@ export class NoteEndpoints {
       content?: string;
       format?: 'plaintext' | 'markdown';
     }
-  ): Promise<UpdateNoteResult> {
-    // Fetch the original note
-    const original = await this.getNote(noteId);
+  ): Promise<Note> {
+    const data: {
+      title?: string;
+      content?: string;
+      format?: 'plaintext' | 'markdown';
+    } = {};
 
-    // Determine the format to use (default to plaintext if not specified)
-    // Note: 'html' format from API is converted to 'plaintext' for creation
-    const originalFormat = original.format === 'markdown' ? 'markdown' : 'plaintext';
-    const newFormat = updates.format || originalFormat;
-
-    // Determine the content to use
-    let newContent: string;
-
+    if (updates.title !== undefined) {
+      data.title = updates.title;
+    }
     if (updates.content !== undefined) {
-      newContent = updates.content;
-    } else {
-      // Use appropriate content field based on format
-      newContent =
-        newFormat === 'markdown'
-          ? original.content_markdown || original.content_plaintext || ''
-          : original.content_plaintext || '';
+      data.content = updates.content;
+      data.format = updates.format || (await this.inferNoteFormat(noteId));
+    } else if (updates.format !== undefined) {
+      data.format = updates.format;
     }
 
-    // Create new note with same parent, updated fields
-    const newNote = await this.createNote({
-      data: {
-        parent_object: original.parent_object,
-        parent_record_id: original.parent_record_id,
-        title: updates.title ?? original.title,
-        format: newFormat,
-        content: newContent,
-      },
-    });
+    const response = await this.client.patch(`/notes/${noteId}`, { data });
+    const dataResponse = response as { data: unknown };
+    return validate(NoteSchema, dataResponse.data);
+  }
 
-    // Delete the original note
-    try {
-      await this.deleteNote(noteId);
-    } catch (error) {
-      // Warn but don't fail - the new note was created successfully
-      console.warn(
-        `Warning: Failed to delete original note ${noteId}. New note ${newNote.id.note_id} was created successfully.`
-      );
+  private async inferNoteFormat(
+    noteId: string
+  ): Promise<'plaintext' | 'markdown'> {
+    const original = await this.getNote(noteId);
+    if (
+      original.content_markdown &&
+      original.content_markdown !== original.content_plaintext
+    ) {
+      return 'markdown';
     }
-
-    return {
-      newNote,
-      oldNoteId: noteId,
-    };
+    return 'plaintext';
   }
 
   /**
@@ -138,23 +119,41 @@ export class NoteEndpoints {
     parentRecordId: string,
     options: { title?: string; titlePattern?: string }
   ): Promise<Note[]> {
-    // List all notes for the parent record
-    const notes = await this.listNotes({
+    const notes = await this.listAllNotes({
       parent_object: parentObject,
       parent_record_id: parentRecordId,
     });
 
     // Filter by exact title or pattern
     if (options.title) {
-      // Exact match (case-insensitive)
-      return notes.filter(
-        (note) => note.title.toLowerCase() === options.title!.toLowerCase()
-      );
+      const title = options.title.toLowerCase();
+      return notes.filter((note) => note.title.toLowerCase() === title);
     }
 
     if (options.titlePattern) {
       const regex = globToRegex(options.titlePattern);
       return notes.filter((note) => regex.test(note.title));
+    }
+
+    return notes;
+  }
+
+  private async listAllNotes(options: ListNotesOptions): Promise<Note[]> {
+    const pageSize = 50;
+    const notes: Note[] = [];
+    let offset = 0;
+
+    for (let page = 0; page < 200; page += 1) {
+      const batch = await this.listNotes({
+        ...options,
+        limit: pageSize,
+        offset,
+      });
+      notes.push(...batch);
+      if (batch.length < pageSize) {
+        return notes;
+      }
+      offset += pageSize;
     }
 
     return notes;

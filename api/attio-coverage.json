@@ -1,0 +1,272 @@
+{
+  "specUrl": "https://api.attio.com/openapi/api",
+  "coveredTags": [
+    "Attributes",
+    "Entries",
+    "Lists",
+    "Meetings",
+    "Notes",
+    "Objects",
+    "Records",
+    "Tasks",
+    "Workspace members"
+  ],
+  "ignoredTags": {
+    "Activities": "Activity logging is outside this CLI.",
+    "Activity records": "Activity records are outside this CLI.",
+    "Comments": "Comments are outside this CLI.",
+    "Emails": "Email sync is outside this CLI.",
+    "Files": "File upload is outside this CLI.",
+    "Call recordings": "Call recordings are outside this CLI.",
+    "Transcripts": "Transcripts are outside this CLI.",
+    "Meta": "Meta endpoints are outside this CLI.",
+    "Sequences": "Sequences are outside this CLI.",
+    "SQL": "The SQL endpoint is outside this CLI.",
+    "Threads": "Threads are outside this CLI.",
+    "Webhooks": "Webhook management is outside this CLI.",
+    "Object views": "Saved views are outside this CLI.",
+    "List views": "Saved views are outside this CLI."
+  },
+  "operations": {
+    "DELETE /v2/lists/{list}/entries/{entry_id}": {
+      "status": "implemented",
+      "fingerprint": "path:entry_id:required\npath:list:required"
+    },
+    "DELETE /v2/meetings/{meeting_id}": {
+      "status": "deferred",
+      "reason": "Meetings are read-only in this CLI."
+    },
+    "DELETE /v2/notes/{note_id}": {
+      "status": "implemented",
+      "fingerprint": "path:note_id:required"
+    },
+    "DELETE /v2/objects/{object}": {
+      "status": "deferred",
+      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+    },
+    "DELETE /v2/objects/{object}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\npath:record_id:required"
+    },
+    "DELETE /v2/tasks/{task_id}": {
+      "status": "implemented",
+      "fingerprint": "path:task_id:required"
+    },
+    "GET /v2/{target}/{identifier}/attributes": {
+      "status": "implemented",
+      "fingerprint": "path:identifier:required\npath:target:required\nquery:limit:optional\nquery:offset:optional\nquery:show_archived:optional"
+    },
+    "GET /v2/{target}/{identifier}/attributes/{attribute}": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required"
+    },
+    "GET /v2/{target}/{identifier}/attributes/{attribute}/options": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required\nquery:show_archived:optional"
+    },
+    "GET /v2/{target}/{identifier}/attributes/{attribute}/statuses": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required\nquery:show_archived:optional"
+    },
+    "GET /v2/lists": {
+      "status": "implemented",
+      "fingerprint": ""
+    },
+    "GET /v2/lists/{list}": {
+      "status": "implemented",
+      "fingerprint": "path:list:required"
+    },
+    "GET /v2/lists/{list}/entries/{entry_id}": {
+      "status": "implemented",
+      "fingerprint": "path:entry_id:required\npath:list:required"
+    },
+    "GET /v2/lists/{list}/entries/{entry_id}/attributes/{attribute}/values": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:entry_id:required\npath:list:required\nquery:limit:optional\nquery:offset:optional\nquery:show_historic:optional"
+    },
+    "GET /v2/lists/{list}/views": {
+      "status": "deferred",
+      "reason": "Saved views are not exposed by this CLI."
+    },
+    "GET /v2/meetings": {
+      "status": "implemented",
+      "fingerprint": "query:cursor:optional\nquery:ends_from:optional\nquery:limit:optional\nquery:linked_object:optional\nquery:linked_record_id:optional\nquery:participants:optional\nquery:sort:optional\nquery:starts_before:optional\nquery:timezone:optional"
+    },
+    "GET /v2/meetings/{meeting_id}": {
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required"
+    },
+    "GET /v2/notes": {
+      "status": "implemented",
+      "fingerprint": "query:limit:optional\nquery:offset:optional\nquery:parent_object:optional\nquery:parent_record_id:optional"
+    },
+    "GET /v2/notes/{note_id}": {
+      "status": "implemented",
+      "fingerprint": "path:note_id:required"
+    },
+    "GET /v2/objects": {
+      "status": "implemented",
+      "fingerprint": ""
+    },
+    "GET /v2/objects/{object}": {
+      "status": "implemented",
+      "fingerprint": "path:object:required"
+    },
+    "GET /v2/objects/{object}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\npath:record_id:required"
+    },
+    "GET /v2/objects/{object}/records/{record_id}/attributes/{attribute}/values": {
+      "status": "deferred",
+      "reason": "Attribute value history writes are not exposed by this CLI."
+    },
+    "GET /v2/objects/{object}/records/{record_id}/entries": {
+      "status": "deferred",
+      "reason": "Listing the lists a record belongs to is not exposed by this CLI."
+    },
+    "GET /v2/objects/{object}/views": {
+      "status": "deferred",
+      "reason": "Saved views are not exposed by this CLI."
+    },
+    "GET /v2/tasks": {
+      "status": "implemented",
+      "fingerprint": "query:assignee:optional\nquery:is_completed:optional\nquery:limit:optional\nquery:linked_object:optional\nquery:linked_record_id:optional\nquery:offset:optional\nquery:sort:optional"
+    },
+    "GET /v2/tasks/{task_id}": {
+      "status": "implemented",
+      "fingerprint": "path:task_id:required"
+    },
+    "GET /v2/workspace_members": {
+      "status": "implemented",
+      "fingerprint": ""
+    },
+    "GET /v2/workspace_members/{workspace_member_id}": {
+      "status": "implemented",
+      "fingerprint": "path:workspace_member_id:required"
+    },
+    "PATCH /v2/{target}/{identifier}/attributes/{attribute}": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required\nbody.data.api_slug:optional\nbody.data.config:optional\nbody.data.default_value:optional\nbody.data.description:optional\nbody.data.is_archived:optional\nbody.data.is_required:optional\nbody.data.is_unique:optional\nbody.data.title:optional"
+    },
+    "PATCH /v2/{target}/{identifier}/attributes/{attribute}/options/{option}": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:option:required\npath:target:required\nbody.data.is_archived:optional\nbody.data.title:optional"
+    },
+    "PATCH /v2/{target}/{identifier}/attributes/{attribute}/statuses/{status}": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:status:required\npath:target:required\nbody.data.celebration_enabled:optional\nbody.data.is_archived:optional\nbody.data.target_time_in_status:optional\nbody.data.title:optional"
+    },
+    "PATCH /v2/lists/{list}": {
+      "status": "implemented",
+      "fingerprint": "path:list:required\nbody.data.api_slug:optional\nbody.data.name:optional\nbody.data.workspace_access:optional\nbody.data.workspace_member_access:optional"
+    },
+    "PATCH /v2/lists/{list}/entries/{entry_id}": {
+      "status": "implemented",
+      "fingerprint": "path:entry_id:required\npath:list:required\nbody.data.entry_values:required"
+    },
+    "PATCH /v2/meetings/{meeting_id}": {
+      "status": "deferred",
+      "reason": "Meetings are read-only in this CLI."
+    },
+    "PATCH /v2/notes/{note_id}": {
+      "status": "implemented",
+      "fingerprint": "path:note_id:required\nbody.data.content:optional\nbody.data.format:optional\nbody.data.title:optional"
+    },
+    "PATCH /v2/objects/{object}": {
+      "status": "deferred",
+      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+    },
+    "PATCH /v2/objects/{object}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\npath:record_id:required\nbody.data.values:required"
+    },
+    "PATCH /v2/tasks/{task_id}": {
+      "status": "implemented",
+      "fingerprint": "path:task_id:required\nbody.data.assignees:optional\nbody.data.deadline_at:optional\nbody.data.is_completed:optional\nbody.data.linked_records:optional"
+    },
+    "POST /v2/{target}/{identifier}/attributes": {
+      "status": "implemented",
+      "fingerprint": "path:identifier:required\npath:target:required\nbody.data.api_slug:required\nbody.data.config:required\nbody.data.default_value:optional\nbody.data.description:required\nbody.data.is_multiselect:required\nbody.data.is_required:required\nbody.data.is_unique:required\nbody.data.relationship:optional\nbody.data.title:required\nbody.data.type:required"
+    },
+    "POST /v2/{target}/{identifier}/attributes/{attribute}/options": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required\nbody.data.title:required"
+    },
+    "POST /v2/{target}/{identifier}/attributes/{attribute}/statuses": {
+      "status": "implemented",
+      "fingerprint": "path:attribute:required\npath:identifier:required\npath:target:required\nbody.data.celebration_enabled:optional\nbody.data.target_time_in_status:optional\nbody.data.title:required"
+    },
+    "POST /v2/lists": {
+      "status": "implemented",
+      "fingerprint": "body.data.api_slug:required\nbody.data.name:required\nbody.data.parent_object:required\nbody.data.workspace_access:required\nbody.data.workspace_member_access:required"
+    },
+    "POST /v2/lists/{list}/entries": {
+      "status": "implemented",
+      "fingerprint": "path:list:required\nbody.data.entry_values:required\nbody.data.parent_object:required\nbody.data.parent_record_id:required"
+    },
+    "POST /v2/lists/{list}/entries/query": {
+      "status": "implemented",
+      "fingerprint": "path:list:required\nbody.filter:optional\nbody.filter_view_id:optional\nbody.limit:optional\nbody.offset:optional\nbody.sorts:optional"
+    },
+    "POST /v2/meetings": {
+      "status": "deferred",
+      "reason": "Meetings are read-only in this CLI."
+    },
+    "POST /v2/notes": {
+      "status": "implemented",
+      "fingerprint": "body.data.content:required\nbody.data.created_at:optional\nbody.data.format:required\nbody.data.meeting_id:optional\nbody.data.parent_object:required\nbody.data.parent_record_id:required\nbody.data.title:required"
+    },
+    "POST /v2/objects": {
+      "status": "deferred",
+      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+    },
+    "POST /v2/objects/{object}/records": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\nbody.data.values:required"
+    },
+    "POST /v2/objects/{object}/records/merge": {
+      "status": "deferred",
+      "reason": "Record merge and workspace search are not exposed by this CLI."
+    },
+    "POST /v2/objects/{object}/records/query": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\nbody.filter:optional\nbody.filter_view_id:optional\nbody.limit:optional\nbody.offset:optional\nbody.sorts:optional"
+    },
+    "POST /v2/objects/records/search": {
+      "status": "deferred",
+      "reason": "Record merge and workspace search are not exposed by this CLI."
+    },
+    "POST /v2/tasks": {
+      "status": "implemented",
+      "fingerprint": "body.data.assignees:required\nbody.data.content:required\nbody.data.deadline_at:required\nbody.data.format:required\nbody.data.is_completed:required\nbody.data.linked_records:required"
+    },
+    "PUT /v2/lists/{list}/entries": {
+      "status": "implemented",
+      "fingerprint": "path:list:required\nbody.data.entry_values:required\nbody.data.parent_object:required\nbody.data.parent_record_id:required"
+    },
+    "PUT /v2/lists/{list}/entries/{entry_id}": {
+      "status": "deferred",
+      "reason": "Not implemented yet. Implement it or keep this explicit waiver."
+    },
+    "PUT /v2/lists/{list}/entries/{entry_id}/attributes/{attribute}/values": {
+      "status": "deferred",
+      "reason": "Attribute value history writes are not exposed by this CLI."
+    },
+    "PUT /v2/meetings/{meeting_id}": {
+      "status": "deferred",
+      "reason": "Meetings are read-only in this CLI."
+    },
+    "PUT /v2/objects/{object}/records": {
+      "status": "implemented",
+      "fingerprint": "path:object:required\nquery:matching_attribute:required\nbody.data.values:required"
+    },
+    "PUT /v2/objects/{object}/records/{record_id}": {
+      "status": "deferred",
+      "reason": "Not implemented yet. Implement it or keep this explicit waiver."
+    },
+    "PUT /v2/objects/{object}/records/{record_id}/attributes/{attribute}/values": {
+      "status": "deferred",
+      "reason": "Attribute value history writes are not exposed by this CLI."
+    }
+  }
+}

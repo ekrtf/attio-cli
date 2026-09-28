@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { Command } from 'commander';
 import { createWorkspaceCommand } from './commands/workspace';
 import { createObjectCommand } from './commands/object';
@@ -10,20 +12,28 @@ import { createNoteCommand } from './commands/note';
 import { createTaskCommand } from './commands/task';
 import { createMeetingCommand } from './commands/meeting';
 import { createAttributeCommand } from './commands/attribute';
+import { applyRootOptions, RootOptions } from './utils/root-options';
+
+const packageJson = JSON.parse(
+  readFileSync(resolve(__dirname, '../package.json'), 'utf8')
+) as { version: string };
 
 const program = new Command();
 
 program
   .name('attio')
   .description('Fully-typed TypeScript CLI for managing Attio CRM via REST API')
-  .version('0.1.0');
+  .version(packageJson.version);
 
-// Global options
 program.option(
   '--api-key <key>',
   'Attio API key (overrides ATTIO_API_KEY env var)'
 );
-program.option('--verbose', 'Show detailed error messages');
+program.option('--debug', 'Show stack traces for errors');
+
+program.hook('preAction', () => {
+  applyRootOptions(program.opts<RootOptions>());
+});
 
 // Add commands
 program.addCommand(createWorkspaceCommand());

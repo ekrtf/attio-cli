@@ -134,7 +134,8 @@ export function parseApiError(
       lowerMessage.includes('attribute') ||
       lowerMessage.includes('operator')
     ) {
-      message += '\n\nTip: Check attribute slugs and valid operators for your object.';
+      message +=
+        '\n\nTip: Check attribute slugs and valid operators for your object.';
       message +=
         '\nUse: attio object attributes <object> --format table to see available attributes.';
     }

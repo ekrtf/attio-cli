@@ -75,7 +75,7 @@ npx attio-cli --help
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/attio-cli.git
+git clone https://github.com/ekrtf/attio-cli.git
 cd attio-cli
 
 # Install dependencies
@@ -157,7 +157,7 @@ Create a `.env` file in your working directory:
 ATTIO_API_KEY=attio_sk_your_key_here
 ```
 
-The CLI automatically loads `.env` files using `dotenv`.
+The CLI reads only `ATTIO_API_KEY` from a `.env` file in the working directory. Other variables in that file are ignored.
 
 ### Command-Line Override
 
@@ -166,6 +166,8 @@ Override the environment variable for a single command:
 ```bash
 attio --api-key attio_sk_different_key object list
 ```
+
+The flag is visible to other users on the machine while the command runs. Prefer `ATTIO_API_KEY` when you can.
 
 ---
 
@@ -749,10 +751,14 @@ attio task delete task_abc123
 View meetings (read-only access).
 
 ```bash
-# List meetings for a record
-attio meeting list <parent-object> <parent-record-id> \
+# List meetings
+attio meeting list \
   [--limit <n>] \
-  [--offset <n>] \
+  [--cursor <cursor>] \
+  [--sort start_asc|start_desc] \
+  [--linked-object <slug>] \
+  [--linked-record-id <id>] \
+  [--participants <emails>] \
   [--format json|table|csv]
 
 # Get specific meeting
@@ -762,14 +768,14 @@ attio meeting get <meeting-id> [--format json|table|csv]
 **Examples:**
 
 ```bash
-# List meetings for a person
-attio meeting list people rec_person123 --format table
+# List meetings linked to a person
+attio meeting list --linked-object people --linked-record-id rec_person123 --format table
 
 # Get meeting details
 attio meeting get meeting_abc123 --format json
 
 # Export meetings to CSV
-attio meeting list people rec_person123 --format csv > meetings.csv
+attio meeting list --format csv > meetings.csv
 ```
 
 ---
@@ -993,7 +999,7 @@ attio record list companies \
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/attio-cli.git
+git clone https://github.com/ekrtf/attio-cli.git
 cd attio-cli
 
 # Install dependencies
@@ -1073,6 +1079,7 @@ npm run lint             # Run ESLint
 npm run lint:fix         # Auto-fix linting issues
 npm run format           # Format code with Prettier
 npm run format:check     # Check code formatting
+npm run check:api        # Compare the CLI with the live Attio OpenAPI spec
 
 # Testing
 npm test                 # Run unit tests
@@ -1176,7 +1183,7 @@ We welcome contributions! Please follow these guidelines:
 ### Development Workflow
 
 1. **Fork** the repository
-2. **Clone** your fork: `git clone https://github.com/yourusername/attio-cli.git`
+2. **Clone** your fork: `git clone https://github.com/ekrtf/attio-cli.git`
 3. **Create a branch**: `git checkout -b feature/my-feature`
 4. **Make changes** and add tests
 5. **Run tests**: `npm test && npm run test:integration`
@@ -1292,8 +1299,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/attio-cli/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/attio-cli/discussions)
+- **Issues**: [GitHub Issues](https://github.com/ekrtf/attio-cli/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ekrtf/attio-cli/discussions)
 - **Attio Support**: support@attio.com
 
 ---

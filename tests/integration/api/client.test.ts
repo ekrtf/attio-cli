@@ -48,8 +48,7 @@ describe('AttioClient Integration Tests', () => {
       const response = await client.get('/workspace_members');
 
       // Validate the entire response structure
-      const validatedResponse =
-        WorkspaceMembersResponseSchema.parse(response);
+      const validatedResponse = WorkspaceMembersResponseSchema.parse(response);
       expect(validatedResponse).toBeDefined();
       expect(validatedResponse.data).toBeInstanceOf(Array);
 
@@ -94,8 +93,7 @@ describe('AttioClient Integration Tests', () => {
 
     it('should return data array even if empty', async () => {
       const response = await client.get('/workspace_members');
-      const validatedResponse =
-        WorkspaceMembersResponseSchema.parse(response);
+      const validatedResponse = WorkspaceMembersResponseSchema.parse(response);
 
       expect(validatedResponse.data).toBeInstanceOf(Array);
     });
@@ -108,7 +106,9 @@ describe('AttioClient Integration Tests', () => {
       expect(Array.isArray((response as any).data)).toBe(true);
 
       // Schema validation should not throw
-      expect(() => WorkspaceMembersResponseSchema.parse(response)).not.toThrow();
+      expect(() =>
+        WorkspaceMembersResponseSchema.parse(response)
+      ).not.toThrow();
     });
   });
 
@@ -148,8 +148,7 @@ describe('AttioClient Integration Tests', () => {
   describe('Type Safety', () => {
     it('should ensure all workspace member fields match schema', async () => {
       const response = await client.get('/workspace_members');
-      const validatedResponse =
-        WorkspaceMembersResponseSchema.parse(response);
+      const validatedResponse = WorkspaceMembersResponseSchema.parse(response);
 
       validatedResponse.data.forEach((member) => {
         // Zod will throw if any field doesn't match the schema
@@ -176,8 +175,7 @@ describe('AttioClient Integration Tests', () => {
 
     it('should validate nested ID structure', async () => {
       const response = await client.get('/workspace_members');
-      const validatedResponse =
-        WorkspaceMembersResponseSchema.parse(response);
+      const validatedResponse = WorkspaceMembersResponseSchema.parse(response);
 
       if (validatedResponse.data.length > 0) {
         const member = validatedResponse.data[0];

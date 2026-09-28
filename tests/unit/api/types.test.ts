@@ -205,7 +205,7 @@ describe('types', () => {
       expect(result).toEqual(entry);
     });
 
-    it('should accept optional attribute_values', () => {
+    it('should accept optional entry_values', () => {
       const entry = {
         id: {
           workspace_id: 'workspace-123',
@@ -214,13 +214,13 @@ describe('types', () => {
         },
         created_at: '2024-01-01T00:00:00Z',
         parent_record_id: 'record-123',
-        attribute_values: {
+        entry_values: {
           status: 'active',
         },
       };
 
       const result = ListEntrySchema.parse(entry);
-      expect(result.attribute_values).toEqual({ status: 'active' });
+      expect(result.entry_values).toEqual({ status: 'active' });
     });
   });
 
@@ -308,12 +308,21 @@ describe('types', () => {
           meeting_id: 'meeting-456',
         },
         title: 'Project Kickoff',
-        start_at: '2024-01-15T10:00:00Z',
-        end_at: '2024-01-15T11:00:00Z',
-        organizer: {
-          referenced_actor_type: 'workspace-member',
-          referenced_actor_id: 'member-123',
+        start: {
+          datetime: '2024-01-15T10:00:00Z',
+          timezone: 'UTC',
         },
+        end: {
+          datetime: '2024-01-15T11:00:00Z',
+          timezone: 'UTC',
+        },
+        participants: [
+          {
+            email_address: 'person@example.com',
+            is_organizer: true,
+            status: 'accepted',
+          },
+        ],
         created_at: '2024-01-01T00:00:00Z',
       };
 

@@ -48,32 +48,24 @@ describe('Filter Validator', () => {
       expect(result.errors).toContain('Filter must be an object');
     });
 
-    it('should reject filter with non-object attribute filter', () => {
-      const filter = {
-        email_addresses: 'not an object',
-      };
-
-      const result = validateFilterStructure(filter);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        'Filter for attribute "email_addresses" must be an object'
-      );
+    it('should accept implicit equality', () => {
+      const result = validateFilterStructure({ name: 'Ada Lovelace' });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
 
-    it('should reject filter missing operator', () => {
-      const filter = {
-        email_addresses: {
-          email_address: {
-            // Missing $ operator
-            value: 'test@example.com',
-          },
-        },
-      };
+    it('should accept combinators', () => {
+      const result = validateFilterStructure({
+        $and: [{ name: 'Ada Lovelace' }],
+      });
+      expect(result.valid).toBe(true);
+    });
 
-      const result = validateFilterStructure(filter);
+    it('should reject null attribute filters', () => {
+      const result = validateFilterStructure({ name: null });
       expect(result.valid).toBe(false);
       expect(result.errors).toContain(
-        'Filter for "email_addresses" must contain an operator like $eq, $contains, $starts_with, or $ends_with'
+        'Filter for attribute "name" must not be null'
       );
     });
 
@@ -92,17 +84,10 @@ describe('Filter Validator', () => {
     });
 
     it('should collect multiple errors', () => {
-      const filter = {
-        email_addresses: 'not an object',
-        name: {
-          first_name: {
-            // Missing operator
-            value: 'John',
-          },
-        },
-      };
-
-      const result = validateFilterStructure(filter);
+      const result = validateFilterStructure({
+        email_addresses: null,
+        name: null,
+      });
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(1);
     });

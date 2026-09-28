@@ -1,9 +1,5 @@
 import { AttioClient } from '../client';
-import {
-  RecordsResponseSchema,
-  RecordSchema,
-  AttioRecord,
-} from '../types';
+import { RecordsResponseSchema, RecordSchema, AttioRecord } from '../types';
 import { validate } from '../../utils/validation';
 
 export interface ListRecordsOptions {
@@ -85,8 +81,9 @@ export class RecordEndpoints {
     data: CreateRecordData
   ): Promise<AttioRecord> {
     const response = await this.client.put(
-      `/objects/${objectSlug}/records?matching_attribute=${matchingAttribute}`,
-      data
+      `/objects/${objectSlug}/records`,
+      data,
+      { matching_attribute: matchingAttribute }
     );
     const dataResponse = response as { data: unknown };
     return validate(RecordSchema, dataResponse.data);

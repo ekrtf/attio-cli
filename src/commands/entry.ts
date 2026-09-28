@@ -6,6 +6,7 @@ import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
 import { validateFilterStructure } from '../utils/filter-validator';
 import { compactRecordValues } from '../utils/compact-formatter';
+import { reportError } from '../utils/cli-error';
 
 export function createEntryCommand(): Command {
   const entry = new Command('entry').description('Manage list entries');
@@ -83,19 +84,19 @@ export function createEntryCommand(): Command {
           ? entries
           : entries.map((entry) => ({
               ...entry,
-              attribute_values: entry.attribute_values
-                ? compactRecordValues(entry.attribute_values, {
+              entry_values: entry.entry_values
+                ? compactRecordValues(entry.entry_values, {
                     verbose: false,
                     includeTestAttributes: false,
                   })
-                : entry.attribute_values,
+                : entry.entry_values,
             }));
 
         if (options.format === 'table') {
           const tableData = displayEntries.map((e) => ({
             entry_id: e.id.entry_id,
             parent_record_id: e.parent_record_id,
-            ...flattenAttributes(e.attribute_values),
+            ...flattenAttributes(e.entry_values),
             created_at: new Date(e.created_at).toISOString(),
           }));
           console.log(formatGenericTable(tableData));
@@ -105,11 +106,7 @@ export function createEntryCommand(): Command {
           console.log(formatJson(displayEntries));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -131,19 +128,19 @@ export function createEntryCommand(): Command {
           ? entryData
           : {
               ...entryData,
-              attribute_values: entryData.attribute_values
-                ? compactRecordValues(entryData.attribute_values, {
+              entry_values: entryData.entry_values
+                ? compactRecordValues(entryData.entry_values, {
                     verbose: false,
                     includeTestAttributes: false,
                   })
-                : entryData.attribute_values,
+                : entryData.entry_values,
             };
 
         if (options.format === 'table') {
           const tableData = {
             entry_id: displayEntry.id.entry_id,
             parent_record_id: displayEntry.parent_record_id,
-            ...flattenAttributes(displayEntry.attribute_values),
+            ...flattenAttributes(displayEntry.entry_values),
             created_at: new Date(displayEntry.created_at).toISOString(),
           };
           console.log(formatGenericTable([tableData]));
@@ -153,11 +150,7 @@ export function createEntryCommand(): Command {
           console.log(formatJson(displayEntry));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -166,8 +159,14 @@ export function createEntryCommand(): Command {
     .description('Create a new list entry')
     .argument('<list-slug>', 'List slug or ID')
     .requiredOption('--parent-record-id <id>', 'Parent record ID')
-    .requiredOption('--parent-object <object>', 'Parent object slug (e.g., people, companies)')
-    .option('--data <json>', 'Entry attribute values as JSON (e.g., \'{"status":"active"}\')')
+    .requiredOption(
+      '--parent-object <object>',
+      'Parent object slug (e.g., people, companies)'
+    )
+    .option(
+      '--data <json>',
+      'Entry attribute values as JSON (e.g., \'{"status":"active"}\')'
+    )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .option('--verbose', 'Show full API response with metadata')
     .action(async (listSlug: string, options) => {
@@ -200,19 +199,19 @@ export function createEntryCommand(): Command {
           ? entryData
           : {
               ...entryData,
-              attribute_values: entryData.attribute_values
-                ? compactRecordValues(entryData.attribute_values, {
+              entry_values: entryData.entry_values
+                ? compactRecordValues(entryData.entry_values, {
                     verbose: false,
                     includeTestAttributes: false,
                   })
-                : entryData.attribute_values,
+                : entryData.entry_values,
             };
 
         if (options.format === 'table') {
           const tableData = {
             entry_id: displayEntry.id.entry_id,
             parent_record_id: displayEntry.parent_record_id,
-            ...flattenAttributes(displayEntry.attribute_values),
+            ...flattenAttributes(displayEntry.entry_values),
             created_at: new Date(displayEntry.created_at).toISOString(),
           };
           console.log(formatGenericTable([tableData]));
@@ -222,11 +221,7 @@ export function createEntryCommand(): Command {
           console.log(formatJson(displayEntry));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -261,19 +256,19 @@ export function createEntryCommand(): Command {
           ? entryData
           : {
               ...entryData,
-              attribute_values: entryData.attribute_values
-                ? compactRecordValues(entryData.attribute_values, {
+              entry_values: entryData.entry_values
+                ? compactRecordValues(entryData.entry_values, {
                     verbose: false,
                     includeTestAttributes: false,
                   })
-                : entryData.attribute_values,
+                : entryData.entry_values,
             };
 
         if (options.format === 'table') {
           const tableData = {
             entry_id: displayEntry.id.entry_id,
             parent_record_id: displayEntry.parent_record_id,
-            ...flattenAttributes(displayEntry.attribute_values),
+            ...flattenAttributes(displayEntry.entry_values),
             created_at: new Date(displayEntry.created_at).toISOString(),
           };
           console.log(formatGenericTable([tableData]));
@@ -283,11 +278,7 @@ export function createEntryCommand(): Command {
           console.log(formatJson(displayEntry));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -301,13 +292,11 @@ export function createEntryCommand(): Command {
         const client = new AttioClient(options.apiKey);
         const listApi = new ListEndpoints(client);
         await listApi.deleteEntry(listSlug, entryId);
-        console.log(`Entry ${entryId} deleted successfully from list ${listSlug}`);
+        console.log(
+          `Entry ${entryId} deleted successfully from list ${listSlug}`
+        );
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -315,7 +304,10 @@ export function createEntryCommand(): Command {
     .command('assert')
     .description('Assert (upsert) a list entry - overwrites all values')
     .argument('<list-slug>', 'List slug or ID')
-    .requiredOption('--data <json>', 'Entry data as JSON (must include entry_values)')
+    .requiredOption(
+      '--data <json>',
+      'Entry data as JSON (must include entry_values)'
+    )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .option('--verbose', 'Show full API response with metadata')
     .action(async (listSlug: string, options) => {
@@ -347,19 +339,19 @@ export function createEntryCommand(): Command {
           ? entryData
           : {
               ...entryData,
-              attribute_values: entryData.attribute_values
-                ? compactRecordValues(entryData.attribute_values, {
+              entry_values: entryData.entry_values
+                ? compactRecordValues(entryData.entry_values, {
                     verbose: false,
                     includeTestAttributes: false,
                   })
-                : entryData.attribute_values,
+                : entryData.entry_values,
             };
 
         if (options.format === 'table') {
           const tableData = {
             entry_id: displayEntry.id.entry_id,
             parent_record_id: displayEntry.parent_record_id,
-            ...flattenAttributes(displayEntry.attribute_values),
+            ...flattenAttributes(displayEntry.entry_values),
             created_at: new Date(displayEntry.created_at).toISOString(),
           };
           console.log(formatGenericTable([tableData]));
@@ -369,17 +361,15 @@ export function createEntryCommand(): Command {
           console.log(formatJson(displayEntry));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
   entry
     .command('attribute-values')
-    .description('List attribute values for an entry (including historic values)')
+    .description(
+      'List attribute values for an entry (including historic values)'
+    )
     .argument('<list-slug>', 'List slug or ID')
     .argument('<entry-id>', 'Entry ID')
     .argument('<attribute-slug>', 'Attribute slug')
@@ -411,15 +401,10 @@ export function createEntryCommand(): Command {
 
           if (options.format === 'table') {
             const tableData = values.map((v) => ({
-              attribute_id: v.attribute_id,
-              value: JSON.stringify(v.value),
-              created_at: new Date(v.created_at).toISOString(),
-              active_from: v.active_from
-                ? new Date(v.active_from).toISOString()
-                : 'N/A',
-              active_until: v.active_until
-                ? new Date(v.active_until).toISOString()
-                : 'N/A',
+              attribute_type: v.attribute_type || '',
+              value: v.value === undefined ? '' : JSON.stringify(v.value),
+              active_from: v.active_from || 'N/A',
+              active_until: v.active_until || 'N/A',
             }));
             console.log(formatGenericTable(tableData));
           } else if (options.format === 'csv') {
@@ -428,11 +413,7 @@ export function createEntryCommand(): Command {
             console.log(formatJson(values));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -452,12 +433,16 @@ function flattenAttributes(
     if (value === null || value === undefined) {
       // Null values (from empty attributes) → display as empty string
       flattened[key] = '';
-    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    } else if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    ) {
       // Primitive values → convert to string
       flattened[key] = String(value);
     } else if (Array.isArray(value)) {
       // Arrays → join with commas for readability
-      flattened[key] = value.map(v => String(v)).join(', ');
+      flattened[key] = value.map((v) => String(v)).join(', ');
     } else if (typeof value === 'object') {
       // Objects → stringify
       flattened[key] = JSON.stringify(value);

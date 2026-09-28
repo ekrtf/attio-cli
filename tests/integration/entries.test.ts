@@ -148,9 +148,13 @@ describe('Entries Integration Tests', () => {
       const list = await listApi.getList(testListSlug);
 
       // Try to update - note: actual updateable attributes depend on the list schema
-      const updatedEntry = await listApi.updateEntry(testListSlug, testEntryId, {
-        data: { entry_values: {} },
-      });
+      const updatedEntry = await listApi.updateEntry(
+        testListSlug,
+        testEntryId,
+        {
+          data: { entry_values: {} },
+        }
+      );
 
       expect(updatedEntry).toBeDefined();
       expect(updatedEntry.id.entry_id).toBe(testEntryId);
@@ -164,7 +168,9 @@ describe('Entries Integration Tests', () => {
       await listApi.deleteEntry(testListSlug, testEntryId);
 
       // Verify deletion by trying to get the entry (should throw)
-      await expect(listApi.getEntry(testListSlug, testEntryId)).rejects.toThrow();
+      await expect(
+        listApi.getEntry(testListSlug, testEntryId)
+      ).rejects.toThrow();
 
       testEntryId = null; // Prevent double deletion in afterAll
     });
@@ -177,7 +183,9 @@ describe('Entries Integration Tests', () => {
       await recordApi.deleteRecord('people', testRecordId);
 
       // Verify deletion by trying to get the record (should throw)
-      await expect(recordApi.getRecord('people', testRecordId)).rejects.toThrow();
+      await expect(
+        recordApi.getRecord('people', testRecordId)
+      ).rejects.toThrow();
 
       testRecordId = null; // Prevent double deletion in afterAll
     });

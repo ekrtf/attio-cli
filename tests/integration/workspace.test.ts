@@ -37,9 +37,7 @@ describe('Workspace Integration Tests', () => {
         expect(member.last_name).toBeDefined();
         expect(member.email_address).toBeDefined();
         expect(member.access_level).toBeDefined();
-        expect(['admin', 'member', 'suspended']).toContain(
-          member.access_level
-        );
+        expect(['admin', 'member', 'suspended']).toContain(member.access_level);
       });
     });
 

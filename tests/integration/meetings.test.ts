@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { AttioClient } from '../../src/api/client';
 import { MeetingEndpoints } from '../../src/api/endpoints/meetings';
+import { meetingBoundText } from '../../src/api/types';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -21,7 +22,7 @@ describe('Meetings Integration Tests (Read-Only)', () => {
 
   describe('List Meetings', () => {
     it('should list meetings', async () => {
-      const meetings = await meetingApi.listMeetings({ limit: 5 });
+      const meetings = (await meetingApi.listMeetings({ limit: 5 })).meetings;
 
       expect(meetings).toBeInstanceOf(Array);
 
@@ -31,63 +32,57 @@ describe('Meetings Integration Tests (Read-Only)', () => {
         expect(meeting.id.meeting_id).toBeDefined();
         expect(meeting.title).toBeDefined();
         expect(meeting.created_at).toBeDefined();
-        // start_at, end_at, and organizer are optional
+        expect(meeting.start).toBeDefined();
       }
     });
 
     it('should respect limit parameter', async () => {
-      const meetings = await meetingApi.listMeetings({ limit: 2 });
+      const meetings = (await meetingApi.listMeetings({ limit: 2 })).meetings;
 
       expect(meetings).toBeInstanceOf(Array);
       expect(meetings.length).toBeLessThanOrEqual(2);
     });
 
     it('should sort meetings by start_at ascending', async () => {
-      const meetings = await meetingApi.listMeetings({
-        sort: 'start_asc',
-        limit: 5,
-      });
+      const meetings = (
+        await meetingApi.listMeetings({
+          sort: 'start_asc',
+          limit: 5,
+        })
+      ).meetings;
 
       expect(meetings).toBeInstanceOf(Array);
 
-      if (meetings.length >= 2) {
-        const meeting1 = meetings[0];
-        const meeting2 = meetings[1];
-        if (meeting1.start_at && meeting2.start_at) {
-          const firstStart = new Date(meeting1.start_at);
-          const secondStart = new Date(meeting2.start_at);
-          expect(firstStart.getTime()).toBeLessThanOrEqual(
-            secondStart.getTime()
-          );
-        }
+      if (meetings.length >= 2 && meetings[0].start && meetings[1].start) {
+        const firstStart = new Date(meetingBoundText(meetings[0].start));
+        const secondStart = new Date(meetingBoundText(meetings[1].start));
+        expect(firstStart.getTime()).toBeLessThanOrEqual(secondStart.getTime());
       }
     });
 
     it('should sort meetings by start_at descending', async () => {
-      const meetings = await meetingApi.listMeetings({
-        sort: 'start_desc',
-        limit: 5,
-      });
+      const meetings = (
+        await meetingApi.listMeetings({
+          sort: 'start_desc',
+          limit: 5,
+        })
+      ).meetings;
 
       expect(meetings).toBeInstanceOf(Array);
 
-      if (meetings.length >= 2) {
-        const meeting1 = meetings[0];
-        const meeting2 = meetings[1];
-        if (meeting1.start_at && meeting2.start_at) {
-          const firstStart = new Date(meeting1.start_at);
-          const secondStart = new Date(meeting2.start_at);
-          expect(firstStart.getTime()).toBeGreaterThanOrEqual(
-            secondStart.getTime()
-          );
-        }
+      if (meetings.length >= 2 && meetings[0].start && meetings[1].start) {
+        const firstStart = new Date(meetingBoundText(meetings[0].start));
+        const secondStart = new Date(meetingBoundText(meetings[1].start));
+        expect(firstStart.getTime()).toBeGreaterThanOrEqual(
+          secondStart.getTime()
+        );
       }
     });
   });
 
   describe('Get Meeting', () => {
     it('should get a specific meeting if any exist', async () => {
-      const meetings = await meetingApi.listMeetings({ limit: 1 });
+      const meetings = (await meetingApi.listMeetings({ limit: 1 })).meetings;
 
       if (meetings.length > 0) {
         const meetingId = meetings[0].id.meeting_id;

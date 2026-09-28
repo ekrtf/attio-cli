@@ -4,6 +4,7 @@ import { AttributeEndpoints } from '../api/endpoints/attributes';
 import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
+import { reportError } from '../utils/cli-error';
 
 function isValidSnakeCase(str: string): boolean {
   // Valid snake_case: lowercase letters, numbers, and underscores only
@@ -57,11 +58,7 @@ export function createAttributeCommand(): Command {
           console.log(formatJson(attributes));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -74,7 +71,12 @@ export function createAttributeCommand(): Command {
     .argument('<attribute-slug>', 'Attribute slug')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -109,11 +111,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(attr));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -126,7 +124,10 @@ export function createAttributeCommand(): Command {
     .argument('<identifier>', 'Object/list slug or ID')
     .requiredOption('--title <title>', 'Attribute title')
     .requiredOption('--slug <slug>', 'API slug (snake_case)')
-    .requiredOption('--type <type>', 'Attribute type (text, number, select, status, etc.)')
+    .requiredOption(
+      '--type <type>',
+      'Attribute type (text, number, select, status, etc.)'
+    )
     .option('--description <description>', 'Attribute description')
     .option('--required', 'Mark as required')
     .option('--unique', 'Mark as unique')
@@ -141,7 +142,9 @@ export function createAttributeCommand(): Command {
 
         if (!isValidSnakeCase(options.slug)) {
           console.error('Error: slug must be in snake_case format');
-          console.error('  Valid format: lowercase letters, numbers, and underscores only');
+          console.error(
+            '  Valid format: lowercase letters, numbers, and underscores only'
+          );
           console.error('  Must start with a letter');
           console.error('  Examples: email_address, deal_status, company_size');
           console.error(`  Invalid: ${options.slug}`);
@@ -187,11 +190,7 @@ export function createAttributeCommand(): Command {
           console.log(formatJson(attr));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -212,7 +211,12 @@ export function createAttributeCommand(): Command {
     )
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -226,8 +230,10 @@ export function createAttributeCommand(): Command {
 
           if (options.title) data.data.title = options.title;
           if (options.description) data.data.description = options.description;
-          if (options.required !== undefined) data.data.is_required = options.required;
-          if (options.unique !== undefined) data.data.is_unique = options.unique;
+          if (options.required !== undefined)
+            data.data.is_required = options.required;
+          if (options.unique !== undefined)
+            data.data.is_unique = options.unique;
 
           if (Object.keys(data.data).length === 0) {
             console.error(
@@ -260,11 +266,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(attr));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -272,7 +274,9 @@ export function createAttributeCommand(): Command {
   // Archive attribute (Note: Attio API does not support deleting attributes)
   attribute
     .command('archive')
-    .description('Archive an attribute (Note: attributes cannot be deleted, only archived via update)')
+    .description(
+      'Archive an attribute (Note: attributes cannot be deleted, only archived via update)'
+    )
     .argument('<target>', 'Target type (objects or lists)')
     .argument('<identifier>', 'Object/list slug or ID')
     .argument('<attribute-slug>', 'Attribute slug')
@@ -284,18 +288,17 @@ export function createAttributeCommand(): Command {
             process.exit(1);
           }
 
-          console.log('Note: The Attio API does not support deleting attributes.');
-          console.log('Attributes can be archived by updating them.');
-          console.log(`To archive, update the attribute "${attributeSlug}" with archived status.`);
-          console.log(`Example: attio attribute update ${target} ${identifier} ${attributeSlug} --description "Archived"`);
-
-          process.exit(1);
+          const client = new AttioClient();
+          const attributeApi = new AttributeEndpoints(client);
+          const attr = await attributeApi.updateAttribute(
+            target,
+            identifier,
+            attributeSlug,
+            { data: { is_archived: true } }
+          );
+          console.log(formatJson(attr));
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -310,7 +313,12 @@ export function createAttributeCommand(): Command {
     .option('--show-archived', 'Include archived options')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -340,11 +348,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(selectOptions));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -359,7 +363,12 @@ export function createAttributeCommand(): Command {
     .requiredOption('--title <title>', 'Option title')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -391,11 +400,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(option));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -433,7 +438,8 @@ export function createAttributeCommand(): Command {
           const data: { data: Record<string, unknown> } = { data: {} };
 
           if (options.title) data.data.title = options.title;
-          if (options.archived !== undefined) data.data.is_archived = options.archived;
+          if (options.archived !== undefined)
+            data.data.is_archived = options.archived;
 
           if (Object.keys(data.data).length === 0) {
             console.error(
@@ -465,11 +471,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(option));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -517,18 +519,18 @@ export function createAttributeCommand(): Command {
           if (options.format === 'json') {
             console.log(formatJson(archivedOption));
           } else if (options.format === 'table') {
-            console.log(formatGenericTable([{
-              option_id: archivedOption.id.option_id,
-              title: archivedOption.title,
-              archived: archivedOption.is_archived,
-            }]));
+            console.log(
+              formatGenericTable([
+                {
+                  option_id: archivedOption.id.option_id,
+                  title: archivedOption.title,
+                  archived: archivedOption.is_archived,
+                },
+              ])
+            );
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -543,7 +545,12 @@ export function createAttributeCommand(): Command {
     .option('--show-archived', 'Include archived statuses')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -574,11 +581,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(statuses));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -594,7 +597,12 @@ export function createAttributeCommand(): Command {
     .option('--celebration', 'Enable celebration')
     .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(
-      async (target: string, identifier: string, attributeSlug: string, options) => {
+      async (
+        target: string,
+        identifier: string,
+        attributeSlug: string,
+        options
+      ) => {
         try {
           if (target !== 'objects' && target !== 'lists') {
             console.error('Error: target must be either "objects" or "lists"');
@@ -634,11 +642,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(status));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -681,7 +685,8 @@ export function createAttributeCommand(): Command {
           if (options.title) data.data.title = options.title;
           if (options.celebration !== undefined)
             data.data.celebration_enabled = options.celebration;
-          if (options.archived !== undefined) data.data.is_archived = options.archived;
+          if (options.archived !== undefined)
+            data.data.is_archived = options.archived;
 
           if (Object.keys(data.data).length === 0) {
             console.error(
@@ -714,11 +719,7 @@ export function createAttributeCommand(): Command {
             console.log(formatJson(status));
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );
@@ -766,18 +767,18 @@ export function createAttributeCommand(): Command {
           if (options.format === 'json') {
             console.log(formatJson(archivedStatus));
           } else if (options.format === 'table') {
-            console.log(formatGenericTable([{
-              status_id: archivedStatus.id.status_id,
-              title: archivedStatus.title,
-              archived: archivedStatus.is_archived,
-            }]));
+            console.log(
+              formatGenericTable([
+                {
+                  status_id: archivedStatus.id.status_id,
+                  title: archivedStatus.title,
+                  archived: archivedStatus.is_archived,
+                },
+              ])
+            );
           }
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(`Error: ${error.message}`);
-            process.exit(1);
-          }
-          throw error;
+          reportError(error);
         }
       }
     );

@@ -70,7 +70,7 @@ describe('Records Integration Tests', () => {
       const testData = {
         data: {
           values: {
-            email_addresses: [{email_address: testEmail}],
+            email_addresses: [{ email_address: testEmail }],
           },
         },
       };
@@ -327,8 +327,13 @@ describe('Records Integration Tests', () => {
       }
 
       // Get the existing record to find the email
-      const existingRecord = await recordApi.getRecord('people', assertTestRecordId);
-      const emailArray = existingRecord.values.email_addresses as Array<{ email_address?: string }>;
+      const existingRecord = await recordApi.getRecord(
+        'people',
+        assertTestRecordId
+      );
+      const emailArray = existingRecord.values.email_addresses as Array<{
+        email_address?: string;
+      }>;
       const testEmail = emailArray[0]?.email_address;
 
       if (!testEmail) {

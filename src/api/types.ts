@@ -17,9 +17,13 @@ export function asSlug(value: string): Slug {
 export const TimestampSchema = z.string().datetime();
 
 export const CreatedBySchema = z.object({
-  type: z.enum(['workspace-member', 'system', 'api', 'api-token']),
-  workspace_member_id: z.string().optional(),
-  api_actor_id: z.string().optional(),
+  type: z
+    .enum(['workspace-member', 'system', 'api', 'api-token', 'app'])
+    .nullable()
+    .optional(),
+  id: z.string().nullable().optional(),
+  workspace_member_id: z.string().nullable().optional(),
+  api_actor_id: z.string().nullable().optional(),
 });
 
 // Workspace Member
@@ -52,9 +56,9 @@ export const ObjectIdSchema = z.object({
 
 export const ObjectSchema = z.object({
   id: ObjectIdSchema,
-  api_slug: z.string(),
-  singular_noun: z.string(),
-  plural_noun: z.string(),
+  api_slug: z.string().nullable(),
+  singular_noun: z.string().nullable(),
+  plural_noun: z.string().nullable(),
   created_at: TimestampSchema,
   is_built_in: z.boolean().optional(),
   is_workspace_level: z.boolean().optional(),
@@ -133,14 +137,20 @@ export const AttributeValueSchema = z.object({
 });
 
 // Attribute Value History (for entry attribute values)
-export const AttributeValueHistorySchema = z.object({
-  attribute_id: z.string(),
-  value: z.unknown(),
-  created_at: TimestampSchema,
-  created_by_actor: CreatedBySchema.optional(),
-  active_from: TimestampSchema.optional(),
-  active_until: TimestampSchema.optional(),
-});
+export const AttributeValueHistorySchema = z
+  .object({
+    active_from: z.string().nullable().optional(),
+    active_until: z.string().nullable().optional(),
+    attribute_type: z.string().optional(),
+    value: z.unknown().optional(),
+    created_by_actor: z
+      .object({
+        id: z.string().nullable().optional(),
+        type: z.string().nullable().optional(),
+      })
+      .optional(),
+  })
+  .passthrough();
 
 export type AttributeValueHistory = z.infer<typeof AttributeValueHistorySchema>;
 
@@ -197,7 +207,8 @@ export const ListEntrySchema = z.object({
   id: ListEntryIdSchema,
   created_at: TimestampSchema,
   parent_record_id: z.string(),
-  attribute_values: z.record(z.unknown()).optional(),
+  parent_object: z.string().optional(),
+  entry_values: z.record(z.unknown()).optional(),
 });
 
 export type ListEntry = z.infer<typeof ListEntrySchema>;
@@ -220,6 +231,8 @@ export const NoteSchema = z.object({
   content_plaintext: z.string().optional(),
   content_markdown: z.string().optional(),
   format: z.enum(['plaintext', 'markdown', 'html']).optional(),
+  meeting_id: z.string().nullable().optional(),
+  tags: z.array(z.unknown()).optional(),
   parent_object: z.string(),
   parent_record_id: z.string(),
   created_at: TimestampSchema,
@@ -243,13 +256,14 @@ export const TaskSchema = z.object({
   id: TaskIdSchema,
   content: z.string().optional(),
   content_plaintext: z.string(),
-  deadline_at: TimestampSchema.nullable().optional(),
+  deadline_at: z.string().nullable().optional(),
   is_completed: z.boolean(),
-  completed_at: TimestampSchema.optional(),
+  completed_at: z.string().nullable().optional(),
   linked_records: z
     .array(
       z.object({
         target_object: z.string().optional(),
+        target_object_id: z.string().optional(),
         target_record_id: z.string().optional(),
       })
     )
@@ -279,41 +293,65 @@ export const MeetingIdSchema = z.object({
   meeting_id: z.string(),
 });
 
+export const MeetingBoundSchema = z.union([
+  z.object({
+    datetime: z.string(),
+    timezone: z.string().nullable().optional(),
+  }),
+  z.object({
+    date: z.string(),
+  }),
+]);
+
+export type MeetingBound = z.infer<typeof MeetingBoundSchema>;
+
+export function meetingBoundText(bound: MeetingBound | undefined): string {
+  if (!bound) {
+    return 'N/A';
+  }
+  if ('datetime' in bound) {
+    return bound.datetime;
+  }
+  return bound.date;
+}
+
 export const MeetingSchema = z.object({
   id: MeetingIdSchema,
   title: z.string(),
-  start_at: TimestampSchema.optional(),
-  end_at: TimestampSchema.optional(),
-  organizer: z
+  description: z.string().nullable().optional(),
+  is_all_day: z.boolean().optional(),
+  start: MeetingBoundSchema.optional(),
+  end: MeetingBoundSchema.optional(),
+  participants: z
+    .array(
+      z.object({
+        status: z.string().optional(),
+        is_organizer: z.boolean().optional(),
+        email_address: z.string().nullable().optional(),
+        name: z.string().nullable().optional(),
+      })
+    )
+    .optional(),
+  linked_records: z.array(z.record(z.unknown())).optional(),
+  created_at: TimestampSchema,
+  created_by_actor: z
     .object({
-      referenced_actor_type: z.string(),
-      referenced_actor_id: z.string(),
+      id: z.string().nullable().optional(),
+      type: z.string().nullable().optional(),
     })
     .optional(),
-  attendees: z
-    .array(
-      z.object({
-        referenced_actor_type: z.string(),
-        referenced_actor_id: z.string(),
-      })
-    )
-    .optional(),
-  linked_records: z
-    .array(
-      z.object({
-        target_object: z.string().optional(),
-        target_record_id: z.string().optional(),
-      })
-    )
-    .optional(),
-  created_at: TimestampSchema,
 });
 
 export type Meeting = z.infer<typeof MeetingSchema>;
 
 export const MeetingsResponseSchema = z.object({
   data: z.array(MeetingSchema),
-  next_cursor: z.string().optional(),
+  pagination: z
+    .object({
+      next_cursor: z.string().nullable().optional(),
+    })
+    .optional(),
+  next_cursor: z.string().nullable().optional(),
 });
 
 // Select Option

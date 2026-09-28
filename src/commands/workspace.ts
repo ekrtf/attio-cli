@@ -4,10 +4,12 @@ import { WorkspaceEndpoints } from '../api/endpoints/workspace';
 import { formatJson } from '../formatters/json';
 import { formatWorkspaceMembersTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
+import { reportError } from '../utils/cli-error';
 
 export function createWorkspaceCommand(): Command {
-  const workspace = new Command('workspace')
-    .description('Manage workspace members and settings');
+  const workspace = new Command('workspace').description(
+    'Manage workspace members and settings'
+  );
 
   const members = new Command('members').description(
     'Manage workspace members'
@@ -18,11 +20,7 @@ export function createWorkspaceCommand(): Command {
     .description('List all workspace members')
     .option('--limit <number>', 'Maximum number of members to return', parseInt)
     .option('--offset <number>', 'Number of members to skip', parseInt)
-    .option(
-      '--format <format>',
-      'Output format (json|table|csv)',
-      'json'
-    )
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(async (options) => {
       try {
         const client = new AttioClient(options.apiKey);
@@ -41,11 +39,7 @@ export function createWorkspaceCommand(): Command {
           console.log(formatJson(workspaceMembers));
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 
@@ -53,11 +47,7 @@ export function createWorkspaceCommand(): Command {
     .command('get')
     .description('Get a specific workspace member')
     .argument('<member-id>', 'Workspace member ID')
-    .option(
-      '--format <format>',
-      'Output format (json|table|csv)',
-      'json'
-    )
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
     .action(async (memberId: string, options) => {
       try {
         const client = new AttioClient(options.apiKey);
@@ -67,15 +57,15 @@ export function createWorkspaceCommand(): Command {
 
         if (options.format === 'table') {
           console.log(formatWorkspaceMembersTable([member]));
-        } else {
+        } else if (options.format === 'csv') {
+          console.log(formatCsv([member]));
+        } else if (options.format === 'json') {
           console.log(formatJson(member));
+        } else {
+          throw new Error('Format must be json, table, or csv');
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(`Error: ${error.message}`);
-          process.exit(1);
-        }
-        throw error;
+        reportError(error);
       }
     });
 

@@ -1,4 +1,5 @@
 import { stringify } from 'csv-stringify/sync';
+import { neutralizeSpreadsheetFormula } from '../utils/terminal';
 
 export function formatCsv(data: unknown): string {
   let arrayData: unknown[];
@@ -40,15 +41,20 @@ function flattenObject(
     if (value === null || value === undefined) {
       flattened[newKey] = '';
     } else if (typeof value === 'object' && !Array.isArray(value)) {
-      // Recursively flatten nested objects
-      Object.assign(flattened, flattenObject(value as Record<string, unknown>, newKey));
+      Object.assign(
+        flattened,
+        flattenObject(value as Record<string, unknown>, newKey)
+      );
     } else if (Array.isArray(value)) {
-      // Join array elements
-      flattened[newKey] = value.map(v =>
-        typeof v === 'object' ? JSON.stringify(v) : String(v)
-      ).join('; ');
+      flattened[newKey] = neutralizeSpreadsheetFormula(
+        value
+          .map((item) =>
+            typeof item === 'object' ? JSON.stringify(item) : String(item)
+          )
+          .join('; ')
+      );
     } else {
-      flattened[newKey] = String(value);
+      flattened[newKey] = neutralizeSpreadsheetFormula(String(value));
     }
   }
 

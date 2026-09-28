@@ -12,9 +12,9 @@ describe('compactRecordValues', () => {
             full_name: 'John Doe',
             attribute_type: 'personal-name',
             active_from: '2024-01-01T00:00:00Z',
-            created_by_actor: { type: 'user', id: '123' }
-          }
-        ]
+            created_by_actor: { type: 'user', id: '123' },
+          },
+        ],
       };
 
       const result = compactRecordValues(values, { verbose: true });
@@ -27,12 +27,14 @@ describe('compactRecordValues', () => {
       const values = {
         name: [{ value: 'John', attribute_type: 'text' }],
         test_attr_123: [{ value: 'test', attribute_type: 'text' }],
-        test_select_456: [{ option: { title: 'Option' }, attribute_type: 'select' }]
+        test_select_456: [
+          { option: { title: 'Option' }, attribute_type: 'select' },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        name: 'John'
+        name: 'John',
       });
       expect(result).not.toHaveProperty('test_attr_123');
       expect(result).not.toHaveProperty('test_select_456');
@@ -41,13 +43,15 @@ describe('compactRecordValues', () => {
     it('should include test attributes when includeTestAttributes is true', () => {
       const values = {
         name: [{ value: 'John', attribute_type: 'text' }],
-        test_attr_123: [{ value: 'test', attribute_type: 'text' }]
+        test_attr_123: [{ value: 'test', attribute_type: 'text' }],
       };
 
-      const result = compactRecordValues(values, { includeTestAttributes: true });
+      const result = compactRecordValues(values, {
+        includeTestAttributes: true,
+      });
       expect(result).toEqual({
         name: 'John',
-        test_attr_123: 'test'
+        test_attr_123: 'test',
       });
     });
   });
@@ -57,25 +61,25 @@ describe('compactRecordValues', () => {
       const values = {
         name: [],
         email: [],
-        tags: []
+        tags: [],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
         name: null,
         email: null,
-        tags: null
+        tags: null,
       });
     });
 
     it('should show null for attributes with no valid values after extraction', () => {
       const values = {
-        name: [null, undefined]
+        name: [null, undefined],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        name: null
+        name: null,
       });
     });
   });
@@ -84,27 +88,33 @@ describe('compactRecordValues', () => {
     it('should unwrap single values from arrays', () => {
       const values = {
         name: [{ value: 'John Doe', attribute_type: 'text' }],
-        twitter: [{ value: 'https://x.com/user', attribute_type: 'text' }]
+        twitter: [{ value: 'https://x.com/user', attribute_type: 'text' }],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
         name: 'John Doe',
-        twitter: 'https://x.com/user'
+        twitter: 'https://x.com/user',
       });
     });
 
     it('should keep arrays for multiple values', () => {
       const values = {
         email_addresses: [
-          { email_address: 'user1@example.com', attribute_type: 'email-address' },
-          { email_address: 'user2@example.com', attribute_type: 'email-address' }
-        ]
+          {
+            email_address: 'user1@example.com',
+            attribute_type: 'email-address',
+          },
+          {
+            email_address: 'user2@example.com',
+            attribute_type: 'email-address',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        email_addresses: ['user1@example.com', 'user2@example.com']
+        email_addresses: ['user1@example.com', 'user2@example.com'],
       });
     });
   });
@@ -116,14 +126,14 @@ describe('compactRecordValues', () => {
           {
             value: 'This is a description',
             attribute_type: 'text',
-            active_from: '2024-01-01T00:00:00Z'
-          }
-        ]
+            active_from: '2024-01-01T00:00:00Z',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        description: 'This is a description'
+        description: 'This is a description',
       });
     });
   });
@@ -131,7 +141,7 @@ describe('compactRecordValues', () => {
   describe('number type', () => {
     it('should extract value from number attribute', () => {
       const values = {
-        age: [{ value: 42, attribute_type: 'number' }]
+        age: [{ value: 42, attribute_type: 'number' }],
       };
 
       const result = compactRecordValues(values);
@@ -142,7 +152,7 @@ describe('compactRecordValues', () => {
   describe('currency type', () => {
     it('should extract simple currency value', () => {
       const values = {
-        amount: [{ value: 100, attribute_type: 'currency' }]
+        amount: [{ value: 100, attribute_type: 'currency' }],
       };
 
       const result = compactRecordValues(values);
@@ -154,14 +164,14 @@ describe('compactRecordValues', () => {
         price: [
           {
             value: { amount: 999, currency_code: 'USD' },
-            attribute_type: 'currency'
-          }
-        ]
+            attribute_type: 'currency',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        price: { amount: 999, currency_code: 'USD' }
+        price: { amount: 999, currency_code: 'USD' },
       });
     });
   });
@@ -170,13 +180,13 @@ describe('compactRecordValues', () => {
     it('should extract boolean value from checkbox', () => {
       const values = {
         is_active: [{ value: true, attribute_type: 'checkbox' }],
-        is_archived: [{ value: false, attribute_type: 'checkbox' }]
+        is_archived: [{ value: false, attribute_type: 'checkbox' }],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
         is_active: true,
-        is_archived: false
+        is_archived: false,
       });
     });
   });
@@ -184,7 +194,7 @@ describe('compactRecordValues', () => {
   describe('date and timestamp types', () => {
     it('should extract date value', () => {
       const values = {
-        birth_date: [{ value: '1990-01-15', attribute_type: 'date' }]
+        birth_date: [{ value: '1990-01-15', attribute_type: 'date' }],
       };
 
       const result = compactRecordValues(values);
@@ -196,9 +206,9 @@ describe('compactRecordValues', () => {
         created_at: [
           {
             value: '2024-01-15T10:30:00Z',
-            attribute_type: 'timestamp'
-          }
-        ]
+            attribute_type: 'timestamp',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -209,7 +219,7 @@ describe('compactRecordValues', () => {
   describe('rating type', () => {
     it('should extract rating value', () => {
       const values = {
-        satisfaction: [{ value: 5, attribute_type: 'rating' }]
+        satisfaction: [{ value: 5, attribute_type: 'rating' }],
       };
 
       const result = compactRecordValues(values);
@@ -220,7 +230,7 @@ describe('compactRecordValues', () => {
   describe('domain type', () => {
     it('should extract domain value', () => {
       const values = {
-        website: [{ value: 'example.com', attribute_type: 'domain' }]
+        website: [{ value: 'example.com', attribute_type: 'domain' }],
       };
 
       const result = compactRecordValues(values);
@@ -236,9 +246,9 @@ describe('compactRecordValues', () => {
             first_name: 'Michael',
             last_name: 'Fröhlich',
             full_name: 'Michael Fröhlich',
-            attribute_type: 'personal-name'
-          }
-        ]
+            attribute_type: 'personal-name',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -251,9 +261,9 @@ describe('compactRecordValues', () => {
           {
             first_name: 'John',
             last_name: 'Doe',
-            attribute_type: 'personal-name'
-          }
-        ]
+            attribute_type: 'personal-name',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -265,9 +275,9 @@ describe('compactRecordValues', () => {
         name: [
           {
             first_name: 'Madonna',
-            attribute_type: 'personal-name'
-          }
-        ]
+            attribute_type: 'personal-name',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -276,7 +286,7 @@ describe('compactRecordValues', () => {
 
     it('should return null for empty personal-name', () => {
       const values = {
-        name: [{ attribute_type: 'personal-name' }]
+        name: [{ attribute_type: 'personal-name' }],
       };
 
       const result = compactRecordValues(values);
@@ -291,9 +301,9 @@ describe('compactRecordValues', () => {
           {
             email_address: 'm.froehlich1994@gmail.com',
             email_domain: 'gmail.com',
-            attribute_type: 'email-address'
-          }
-        ]
+            attribute_type: 'email-address',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -305,18 +315,18 @@ describe('compactRecordValues', () => {
         email_addresses: [
           {
             email_address: 'user1@example.com',
-            attribute_type: 'email-address'
+            attribute_type: 'email-address',
           },
           {
             email_address: 'user2@example.com',
-            attribute_type: 'email-address'
-          }
-        ]
+            attribute_type: 'email-address',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        email_addresses: ['user1@example.com', 'user2@example.com']
+        email_addresses: ['user1@example.com', 'user2@example.com'],
       });
     });
   });
@@ -328,9 +338,9 @@ describe('compactRecordValues', () => {
           {
             phone_number: '+1234567890',
             country_code: 'US',
-            attribute_type: 'phone-number'
-          }
-        ]
+            attribute_type: 'phone-number',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -346,9 +356,9 @@ describe('compactRecordValues', () => {
             locality: 'Munich',
             region: 'Bavaria',
             country_code: 'DE',
-            attribute_type: 'location'
-          }
-        ]
+            attribute_type: 'location',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -361,9 +371,9 @@ describe('compactRecordValues', () => {
           {
             locality: 'San Francisco',
             country_code: 'US',
-            attribute_type: 'location'
-          }
-        ]
+            attribute_type: 'location',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -372,7 +382,7 @@ describe('compactRecordValues', () => {
 
     it('should return null for empty location', () => {
       const values = {
-        location: [{ attribute_type: 'location' }]
+        location: [{ attribute_type: 'location' }],
       };
 
       const result = compactRecordValues(values);
@@ -388,11 +398,11 @@ describe('compactRecordValues', () => {
             option: {
               id: { option_id: '123' },
               title: 'CDTM',
-              is_archived: false
+              is_archived: false,
             },
-            attribute_type: 'select'
-          }
-        ]
+            attribute_type: 'select',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -401,7 +411,7 @@ describe('compactRecordValues', () => {
 
     it('should return null for select with no option', () => {
       const values = {
-        category: [{ attribute_type: 'select' }]
+        category: [{ attribute_type: 'select' }],
       };
 
       const result = compactRecordValues(values);
@@ -415,13 +425,13 @@ describe('compactRecordValues', () => {
         tags: [
           {
             option: { title: 'Tag1' },
-            attribute_type: 'multiselect'
+            attribute_type: 'multiselect',
           },
           {
             option: { title: 'Tag2' },
-            attribute_type: 'multiselect'
-          }
-        ]
+            attribute_type: 'multiselect',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -436,11 +446,11 @@ describe('compactRecordValues', () => {
           {
             status: {
               title: 'Active',
-              is_archived: false
+              is_archived: false,
             },
-            attribute_type: 'status'
-          }
-        ]
+            attribute_type: 'status',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -449,7 +459,7 @@ describe('compactRecordValues', () => {
 
     it('should return null for status with no status object', () => {
       const values = {
-        status: [{ attribute_type: 'status' }]
+        status: [{ attribute_type: 'status' }],
       };
 
       const result = compactRecordValues(values);
@@ -464,9 +474,9 @@ describe('compactRecordValues', () => {
           {
             referenced_actor_type: 'workspace-member',
             referenced_actor_id: '456',
-            attribute_type: 'actor-reference'
-          }
-        ]
+            attribute_type: 'actor-reference',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -478,9 +488,9 @@ describe('compactRecordValues', () => {
         created_by: [
           {
             referenced_actor_id: '456',
-            attribute_type: 'actor-reference'
-          }
-        ]
+            attribute_type: 'actor-reference',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -495,14 +505,14 @@ describe('compactRecordValues', () => {
           {
             target_object: 'companies',
             target_record_id: '6379a0c4-f1b9-4a78-8c99-655b62afe22d',
-            attribute_type: 'record-reference'
-          }
-        ]
+            attribute_type: 'record-reference',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        company: '6379a0c4-f1b9-4a78-8c99-655b62afe22d'
+        company: '6379a0c4-f1b9-4a78-8c99-655b62afe22d',
       });
     });
 
@@ -511,13 +521,13 @@ describe('compactRecordValues', () => {
         companies: [
           {
             target_record_id: 'id1',
-            attribute_type: 'record-reference'
+            attribute_type: 'record-reference',
           },
           {
             target_record_id: 'id2',
-            attribute_type: 'record-reference'
-          }
-        ]
+            attribute_type: 'record-reference',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -531,9 +541,9 @@ describe('compactRecordValues', () => {
         last_contact: [
           {
             interaction_type: 'email',
-            attribute_type: 'interaction'
-          }
-        ]
+            attribute_type: 'interaction',
+          },
+        ],
       };
 
       const result = compactRecordValues(values);
@@ -542,7 +552,7 @@ describe('compactRecordValues', () => {
 
     it('should fallback to "interaction" for generic interactions', () => {
       const values = {
-        last_contact: [{ attribute_type: 'interaction' }]
+        last_contact: [{ attribute_type: 'interaction' }],
       };
 
       const result = compactRecordValues(values);
@@ -553,7 +563,7 @@ describe('compactRecordValues', () => {
   describe('unknown or missing type', () => {
     it('should extract .value if present', () => {
       const values = {
-        custom_field: [{ value: 'custom value' }]
+        custom_field: [{ value: 'custom value' }],
       };
 
       const result = compactRecordValues(values);
@@ -562,12 +572,12 @@ describe('compactRecordValues', () => {
 
     it('should return object as-is if no .value', () => {
       const values = {
-        custom_field: [{ custom_property: 'data' }]
+        custom_field: [{ custom_property: 'data' }],
       };
 
       const result = compactRecordValues(values);
       expect(result).toEqual({
-        custom_field: { custom_property: 'data' }
+        custom_field: { custom_property: 'data' },
       });
     });
   });
@@ -582,22 +592,22 @@ describe('compactRecordValues', () => {
             full_name: 'Michael Fröhlich',
             attribute_type: 'personal-name',
             active_from: '2026-01-30T18:33:54.442000000Z',
-            created_by_actor: { type: 'api-token', id: 'xyz' }
-          }
+            created_by_actor: { type: 'api-token', id: 'xyz' },
+          },
         ],
         email_addresses: [
           {
             email_address: 'm.froehlich1994@gmail.com',
             email_domain: 'gmail.com',
             attribute_type: 'email-address',
-            active_from: '2026-01-30T18:33:54.442000000Z'
+            active_from: '2026-01-30T18:33:54.442000000Z',
           },
           {
             email_address: 'michael@ark-climate.de',
             email_domain: 'ark-climate.de',
             attribute_type: 'email-address',
-            active_from: '2026-01-31T10:15:22.123000000Z'
-          }
+            active_from: '2026-01-31T10:15:22.123000000Z',
+          },
         ],
         instagram: [],
         description: [],
@@ -605,22 +615,22 @@ describe('compactRecordValues', () => {
           {
             value: 'https://x.com/froehlichmmm',
             attribute_type: 'text',
-            active_from: '2026-01-15T14:43:24.827000000Z'
-          }
+            active_from: '2026-01-15T14:43:24.827000000Z',
+          },
         ],
         key_account: [
           {
             option: {
               id: { workspace_id: '...', option_id: '...' },
               title: 'CDTM',
-              is_archived: false
+              is_archived: false,
             },
             attribute_type: 'select',
-            active_from: '2026-01-31T22:25:33.001000000Z'
-          }
+            active_from: '2026-01-31T22:25:33.001000000Z',
+          },
         ],
         test_attr_1770130545682: [],
-        test_select_1770130546620: []
+        test_select_1770130546620: [],
       };
 
       const result = compactRecordValues(values);
@@ -629,12 +639,12 @@ describe('compactRecordValues', () => {
         name: 'Michael Fröhlich',
         email_addresses: [
           'm.froehlich1994@gmail.com',
-          'michael@ark-climate.de'
+          'michael@ark-climate.de',
         ],
         instagram: null,
         description: null,
         twitter: 'https://x.com/froehlichmmm',
-        key_account: 'CDTM'
+        key_account: 'CDTM',
         // test attributes should be filtered out
       });
 
