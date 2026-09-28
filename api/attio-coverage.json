@@ -41,8 +41,8 @@
       "fingerprint": "path:note_id:required"
     },
     "DELETE /v2/objects/{object}": {
-      "status": "deferred",
-      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:object:required"
     },
     "DELETE /v2/objects/{object}/records/{record_id}": {
       "status": "implemented",
@@ -173,8 +173,8 @@
       "fingerprint": "path:note_id:required\nbody.data.content:optional\nbody.data.format:optional\nbody.data.title:optional"
     },
     "PATCH /v2/objects/{object}": {
-      "status": "deferred",
-      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:object:required\nbody.data.api_slug:optional\nbody.data.plural_noun:optional\nbody.data.singular_noun:optional"
     },
     "PATCH /v2/objects/{object}/records/{record_id}": {
       "status": "implemented",
@@ -217,8 +217,8 @@
       "fingerprint": "body.data.content:required\nbody.data.created_at:optional\nbody.data.format:required\nbody.data.meeting_id:optional\nbody.data.parent_object:required\nbody.data.parent_record_id:required\nbody.data.title:required"
     },
     "POST /v2/objects": {
-      "status": "deferred",
-      "reason": "Creating, updating, and deleting object definitions is not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "body.data.api_slug:required\nbody.data.plural_noun:required\nbody.data.singular_noun:required"
     },
     "POST /v2/objects/{object}/records": {
       "status": "implemented",

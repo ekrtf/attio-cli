@@ -231,6 +231,15 @@ attio object list [--format json|table|csv]
 # Get specific object
 attio object get <slug> [--format json|table|csv]
 
+# Create a custom object
+attio object create --api-slug <slug> --singular <noun> --plural <noun>
+
+# Update an object definition
+attio object update <slug> [--api-slug <slug>] [--singular <noun>] [--plural <noun>]
+
+# Delete a custom object
+attio object delete <slug>
+
 # List attributes for an object
 attio object attributes <object-slug> [--format json|table|csv]
 

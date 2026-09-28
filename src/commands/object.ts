@@ -77,6 +77,110 @@ export function createObjectCommand(): Command {
       }
     });
 
+  object
+    .command('create')
+    .description('Create a custom object')
+    .requiredOption('--api-slug <slug>', 'Snake-case API slug')
+    .requiredOption('--singular <noun>', 'Singular noun, for example Person')
+    .requiredOption('--plural <noun>', 'Plural noun, for example People')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (options) => {
+      try {
+        if (!/^[a-z][a-z0-9_]*$/.test(options.apiSlug)) {
+          throw new Error(
+            'api_slug must be snake_case: lowercase letters, numbers, and underscores, starting with a letter'
+          );
+        }
+        const client = new AttioClient(options.apiKey);
+        const objectApi = new ObjectEndpoints(client);
+        const created = await objectApi.createObject({
+          data: {
+            api_slug: options.apiSlug,
+            singular_noun: options.singular,
+            plural_noun: options.plural,
+          },
+        });
+        if (options.format === 'csv') {
+          console.log(formatCsv(created));
+        } else if (options.format === 'table') {
+          console.log(
+            formatGenericTable([
+              {
+                slug: created.api_slug,
+                singular: created.singular_noun,
+                plural: created.plural_noun,
+              },
+            ])
+          );
+        } else {
+          console.log(formatJson(created));
+        }
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  object
+    .command('update')
+    .description('Update an object definition')
+    .argument('<slug>', 'Object slug or ID')
+    .option('--api-slug <slug>', 'New snake-case API slug')
+    .option('--singular <noun>', 'New singular noun')
+    .option('--plural <noun>', 'New plural noun')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, options) => {
+      try {
+        const data: {
+          api_slug?: string;
+          singular_noun?: string;
+          plural_noun?: string;
+        } = {};
+        if (options.apiSlug) data.api_slug = options.apiSlug;
+        if (options.singular) data.singular_noun = options.singular;
+        if (options.plural) data.plural_noun = options.plural;
+        if (Object.keys(data).length === 0) {
+          throw new Error(
+            'Provide at least one of --api-slug, --singular, or --plural'
+          );
+        }
+        const client = new AttioClient(options.apiKey);
+        const objectApi = new ObjectEndpoints(client);
+        const updated = await objectApi.updateObject(slug, { data });
+        if (options.format === 'csv') {
+          console.log(formatCsv(updated));
+        } else if (options.format === 'table') {
+          console.log(
+            formatGenericTable([
+              {
+                slug: updated.api_slug,
+                singular: updated.singular_noun,
+                plural: updated.plural_noun,
+              },
+            ])
+          );
+        } else {
+          console.log(formatJson(updated));
+        }
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  object
+    .command('delete')
+    .description('Delete a custom object')
+    .argument('<slug>', 'Object slug or ID')
+    .action(async (slug: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const objectApi = new ObjectEndpoints(client);
+        await objectApi.deleteObject(slug);
+        console.log(`Object ${slug} deleted successfully`);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
   // List attributes
   object
     .command('attributes')
