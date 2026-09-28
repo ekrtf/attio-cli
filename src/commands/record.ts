@@ -254,6 +254,27 @@ export function createRecordCommand(): Command {
     });
 
   record
+    .command('merge')
+    .description('Merge two records of the same object')
+    .argument('<object>', 'Object slug')
+    .requiredOption('--primary <record-id>', 'Record that wins field conflicts')
+    .requiredOption('--secondary <record-id>', 'Record merged into the primary')
+    .action(async (objectSlug: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const recordApi = new RecordEndpoints(client);
+        const newId = await recordApi.mergeRecords(
+          objectSlug,
+          options.primary,
+          options.secondary
+        );
+        console.log(formatJson({ new_record_id: newId }));
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  record
     .command('entries')
     .description('List the list entries a record belongs to')
     .argument('<object>', 'Object slug')

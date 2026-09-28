@@ -225,8 +225,8 @@
       "fingerprint": "path:object:required\nbody.data.values:required"
     },
     "POST /v2/objects/{object}/records/merge": {
-      "status": "deferred",
-      "reason": "Record merge and workspace search are not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:object:required\nbody.data.primary_record_id:required\nbody.data.secondary_record_id:required"
     },
     "POST /v2/objects/{object}/records/query": {
       "status": "implemented",

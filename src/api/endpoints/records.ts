@@ -1,4 +1,6 @@
+import { z } from 'zod';
 import { AttioClient } from '../client';
+import { readData } from '../response';
 import {
   RecordsResponseSchema,
   RecordSchema,
@@ -108,6 +110,24 @@ export class RecordEndpoints {
     );
     const dataResponse = response as { data: unknown };
     return validate(RecordSchema, dataResponse.data);
+  }
+
+  async mergeRecords(
+    objectSlug: string,
+    primaryRecordId: string,
+    secondaryRecordId: string
+  ): Promise<string> {
+    const response = await this.client.post(
+      `/objects/${objectSlug}/records/merge`,
+      {
+        data: {
+          primary_record_id: primaryRecordId,
+          secondary_record_id: secondaryRecordId,
+        },
+      }
+    );
+    const result = readData(response, z.object({ new_record_id: z.string() }));
+    return result.new_record_id;
   }
 
   async listEntries(

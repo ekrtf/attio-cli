@@ -467,6 +467,8 @@ attio record replace <object> <record-id> --data '<values-json>'
 # Read or write one attribute's value history
 attio record entries <object> <record-id> [--limit <n>] [--offset <n>]
 
+attio record merge <object> --primary <record-id> --secondary <record-id>
+
 attio record values <object> <record-id> <attribute> [--show-historic]
 attio record set-values <object> <record-id> <attribute> --data '<json-array>' [--replace-history]
 
