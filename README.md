@@ -464,6 +464,10 @@ attio record update <object> <record-id> --data <json> [--format json|table|csv]
 # Replace all attribute values
 attio record replace <object> <record-id> --data '<values-json>'
 
+# Read or write one attribute's value history
+attio record values <object> <record-id> <attribute> [--show-historic]
+attio record set-values <object> <record-id> <attribute> --data '<json-array>' [--replace-history]
+
 # Delete a record
 attio record delete <object> <record-id>
 

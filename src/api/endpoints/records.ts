@@ -1,5 +1,11 @@
 import { AttioClient } from '../client';
-import { RecordsResponseSchema, RecordSchema, AttioRecord } from '../types';
+import {
+  RecordsResponseSchema,
+  RecordSchema,
+  AttioRecord,
+  AttributeValueHistory,
+  AttributeValueHistorySchema,
+} from '../types';
 import { validate } from '../../utils/validation';
 
 export interface ListRecordsOptions {
@@ -100,5 +106,46 @@ export class RecordEndpoints {
     );
     const dataResponse = response as { data: unknown };
     return validate(RecordSchema, dataResponse.data);
+  }
+
+  async listAttributeValues(
+    objectSlug: string,
+    recordId: string,
+    attributeSlug: string,
+    options?: { showHistoric?: boolean; limit?: number; offset?: number }
+  ): Promise<AttributeValueHistory[]> {
+    const params: Record<string, unknown> = {};
+    if (options?.showHistoric) params.show_historic = options.showHistoric;
+    if (options?.limit) params.limit = options.limit;
+    if (options?.offset) params.offset = options.offset;
+    const response = await this.client.get(
+      `/objects/${objectSlug}/records/${recordId}/attributes/${attributeSlug}/values`,
+      params
+    );
+    const dataResponse = response as { data: unknown[] };
+    return dataResponse.data.map((item) =>
+      validate(AttributeValueHistorySchema, item)
+    );
+  }
+
+  async setAttributeValues(
+    objectSlug: string,
+    recordId: string,
+    attributeSlug: string,
+    data: {
+      data: {
+        values: unknown[];
+        replace_history: boolean;
+      };
+    }
+  ): Promise<AttributeValueHistory[]> {
+    const response = await this.client.put(
+      `/objects/${objectSlug}/records/${recordId}/attributes/${attributeSlug}/values`,
+      data
+    );
+    const dataResponse = response as { data: unknown[] };
+    return dataResponse.data.map((item) =>
+      validate(AttributeValueHistorySchema, item)
+    );
   }
 }

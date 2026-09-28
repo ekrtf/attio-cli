@@ -254,6 +254,90 @@ export function createRecordCommand(): Command {
     });
 
   record
+    .command('values')
+    .description('List the value history of one attribute')
+    .argument('<object>', 'Object slug')
+    .argument('<record-id>', 'Record ID')
+    .argument('<attribute>', 'Attribute slug or ID')
+    .option('--show-historic', 'Include historic values')
+    .option('--limit <number>', 'Maximum values to return', parseInt)
+    .option('--offset <number>', 'Number of values to skip', parseInt)
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(
+      async (
+        objectSlug: string,
+        recordId: string,
+        attribute: string,
+        options
+      ) => {
+        try {
+          const client = new AttioClient(options.apiKey);
+          const recordApi = new RecordEndpoints(client);
+          const values = await recordApi.listAttributeValues(
+            objectSlug,
+            recordId,
+            attribute,
+            {
+              showHistoric: options.showHistoric,
+              limit: options.limit,
+              offset: options.offset,
+            }
+          );
+          present(values, options.format);
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    );
+
+  record
+    .command('set-values')
+    .description('Write the value history of one attribute')
+    .argument('<object>', 'Object slug')
+    .argument('<record-id>', 'Record ID')
+    .argument('<attribute>', 'Attribute slug or ID')
+    .requiredOption(
+      '--data <json>',
+      'JSON array of {value, active_from, active_until}'
+    )
+    .option(
+      '--replace-history',
+      'Replace existing history instead of appending'
+    )
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(
+      async (
+        objectSlug: string,
+        recordId: string,
+        attribute: string,
+        options
+      ) => {
+        try {
+          const values = readJson(options.data, '--data');
+          if (!Array.isArray(values)) {
+            throw new Error('--data must be a JSON array');
+          }
+          const client = new AttioClient(options.apiKey);
+          const recordApi = new RecordEndpoints(client);
+          const written = await recordApi.setAttributeValues(
+            objectSlug,
+            recordId,
+            attribute,
+            {
+              data: {
+                values,
+                replace_history: Boolean(options.replaceHistory),
+              },
+            }
+          );
+          present(written, options.format);
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    );
+
+  record
     .command('replace')
     .description("Replace a record's attribute values")
     .argument('<object>', 'Object slug (e.g., people, companies, deals)')
