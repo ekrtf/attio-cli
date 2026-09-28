@@ -163,6 +163,7 @@ export const RecordIdSchema = z.object({
 
 export const RecordSchema = z.object({
   id: RecordIdSchema,
+  web_url: z.string().optional(),
   values: z.record(z.unknown()), // Map of attribute slug to value
   created_at: TimestampSchema,
 });
@@ -185,6 +186,8 @@ export const ListSchema = z.object({
   api_slug: z.string(),
   name: z.string(),
   parent_object: z.union([z.string(), z.array(z.string())]), // Can be string or array
+  workspace_access: z.string().nullable().optional(),
+  workspace_member_access: z.array(z.unknown()).optional(),
   created_at: TimestampSchema,
   created_by_actor: CreatedBySchema,
   entry_count: z.number().optional(),
