@@ -3,8 +3,27 @@
 > A production-grade, fully-typed TypeScript CLI for managing [Attio CRM](https://attio.com) via REST API.
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
-[![Tests](https://img.shields.io/badge/tests-112%20passing-brightgreen.svg)](#testing)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+## Install
+
+```bash
+npm install -g attio-cli
+export ATTIO_API_KEY="attio_sk_your_key_here"
+attio workspace members list
+```
+
+From a git checkout instead of npm:
+
+```bash
+git clone https://github.com/ekrtf/attio-cli.git
+cd attio-cli
+npm install
+npm run build
+npm link
+```
+
+The longer install notes are in [Installation](#installation).
 
 ---
 
@@ -35,6 +54,7 @@
 
 ## Table of Contents
 
+- [Install](#install)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Authentication](#authentication)
