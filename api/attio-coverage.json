@@ -2,6 +2,7 @@
   "specUrl": "https://api.attio.com/openapi/api",
   "coveredTags": [
     "Attributes",
+    "Comments",
     "Entries",
     "Lists",
     "Meetings",
@@ -14,7 +15,6 @@
   "ignoredTags": {
     "Activities": "Activity logging is outside this CLI.",
     "Activity records": "Activity records are outside this CLI.",
-    "Comments": "Comments are outside this CLI.",
     "Emails": "Email sync is outside this CLI.",
     "Files": "File upload is outside this CLI.",
     "Call recordings": "Call recordings are outside this CLI.",
@@ -267,6 +267,18 @@
     "PUT /v2/objects/{object}/records/{record_id}/attributes/{attribute}/values": {
       "status": "implemented",
       "fingerprint": "path:attribute:required\npath:object:required\npath:record_id:required\nbody.data.replace_history:required\nbody.data.values:required"
+    },
+    "GET /v2/comments/{comment_id}": {
+      "status": "implemented",
+      "fingerprint": "path:comment_id:required"
+    },
+    "POST /v2/comments": {
+      "status": "implemented",
+      "fingerprint": "body.data:required"
+    },
+    "DELETE /v2/comments/{comment_id}": {
+      "status": "implemented",
+      "fingerprint": "path:comment_id:required"
     }
   }
 }

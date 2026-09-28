@@ -26,6 +26,10 @@ export function readPage(response: unknown): Page {
   };
 }
 
+export function readRecord(response: unknown): Record<string, unknown> {
+  return readData(response, z.record(z.unknown()));
+}
+
 export function readData<T>(response: unknown, schema: z.ZodSchema<T>): T {
   const envelope = validate(
     z.object({ data: z.unknown() }).passthrough(),

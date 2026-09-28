@@ -36,6 +36,7 @@ The longer install notes are in [Installation](#installation).
 - **Lists & Entries** - Manage lists and their entries with attribute values
 - **Notes & Tasks** - Create and organize notes and tasks linked to records
 - **Meetings** - List, create, link, and delete meetings
+- **Comments** - Create, read, and delete comments on records, entries, and threads
 
 ### 🚀 Developer Experience
 - **Fully Typed** - TypeScript strict mode with Zod runtime validation
@@ -824,6 +825,16 @@ attio meeting create --title "Kickoff" --description "Agenda" \
 attio meeting link <meeting-id> --linked-records '[{"object":"people","record_id":"<uuid>"}]'
 attio meeting set-links <meeting-id> --linked-records '[]'
 attio meeting delete <meeting-id>
+```
+
+### Comments
+
+```bash
+attio comment create --content "Following up" --author-id <member-id> \
+  --record-object people --record-id <record-id>
+attio comment get <comment-id>
+attio comment delete <comment-id>
+```
 ```
 
 **Examples:**
