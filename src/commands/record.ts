@@ -7,6 +7,7 @@ import { formatCsv } from '../formatters/csv';
 import { validateFilterStructure } from '../utils/filter-validator';
 import { compactRecordValues } from '../utils/compact-formatter';
 import { reportError } from '../utils/cli-error';
+import { present, readJson } from './present';
 
 export function createRecordCommand(): Command {
   const record = new Command('record').description(
@@ -247,6 +248,44 @@ export function createRecordCommand(): Command {
         } else {
           console.log(formatJson(displayRecord));
         }
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  record
+    .command('replace')
+    .description("Replace a record's attribute values")
+    .argument('<object>', 'Object slug (e.g., people, companies, deals)')
+    .argument('<record-id>', 'Record ID')
+    .requiredOption('--data <json>', 'Attribute values object as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .option('--verbose', 'Show full API response with metadata')
+    .action(async (objectSlug: string, recordId: string, options) => {
+      try {
+        const values = readJson(options.data, '--data');
+        if (
+          typeof values !== 'object' ||
+          values === null ||
+          Array.isArray(values)
+        ) {
+          throw new Error('--data must be a JSON object of attribute values');
+        }
+        const client = new AttioClient(options.apiKey);
+        const recordApi = new RecordEndpoints(client);
+        const rec = await recordApi.replaceRecord(objectSlug, recordId, {
+          data: { values: values as Record<string, unknown> },
+        });
+        const displayRecord = options.verbose
+          ? rec
+          : {
+              ...rec,
+              values: compactRecordValues(rec.values, {
+                verbose: false,
+                includeTestAttributes: false,
+              }),
+            };
+        present(displayRecord, options.format);
       } catch (error) {
         reportError(error);
       }

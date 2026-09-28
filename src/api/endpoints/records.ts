@@ -75,6 +75,19 @@ export class RecordEndpoints {
     await this.client.delete(`/objects/${objectSlug}/records/${recordId}`);
   }
 
+  async replaceRecord(
+    objectSlug: string,
+    recordId: string,
+    data: { data: { values: Record<string, unknown> } }
+  ): Promise<AttioRecord> {
+    const response = await this.client.put(
+      `/objects/${objectSlug}/records/${recordId}`,
+      data
+    );
+    const dataResponse = response as { data: unknown };
+    return validate(RecordSchema, dataResponse.data);
+  }
+
   async assertRecord(
     objectSlug: string,
     matchingAttribute: string,

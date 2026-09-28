@@ -261,8 +261,8 @@
       "fingerprint": "path:object:required\nquery:matching_attribute:required\nbody.data.values:required"
     },
     "PUT /v2/objects/{object}/records/{record_id}": {
-      "status": "deferred",
-      "reason": "Not implemented yet. Implement it or keep this explicit waiver."
+      "status": "implemented",
+      "fingerprint": "path:object:required\npath:record_id:required\nbody.data.values:required"
     },
     "PUT /v2/objects/{object}/records/{record_id}/attributes/{attribute}/values": {
       "status": "deferred",

@@ -461,6 +461,9 @@ attio record create <object> --data <json> [--format json|table|csv]
 # Update an existing record
 attio record update <object> <record-id> --data <json> [--format json|table|csv]
 
+# Replace all attribute values
+attio record replace <object> <record-id> --data '<values-json>'
+
 # Delete a record
 attio record delete <object> <record-id>
 
