@@ -845,6 +845,13 @@ attio webhook get <webhook-id>
 attio webhook update <webhook-id> --events record.updated
 attio webhook delete <webhook-id>
 ```
+
+### Threads
+
+```bash
+attio thread list --object people --record-id <record-id>
+attio thread get <thread-id>
+```
 ```
 
 **Examples:**

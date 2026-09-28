@@ -10,6 +10,7 @@
     "Objects",
     "Records",
     "Tasks",
+    "Threads",
     "Webhooks",
     "Workspace members"
   ],
@@ -23,7 +24,6 @@
     "Meta": "Meta endpoints are outside this CLI.",
     "Sequences": "Sequences are outside this CLI.",
     "SQL": "The SQL endpoint is outside this CLI.",
-    "Threads": "Threads are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -299,6 +299,14 @@
     "DELETE /v2/webhooks/{webhook_id}": {
       "status": "implemented",
       "fingerprint": "path:webhook_id:required"
+    },
+    "GET /v2/threads": {
+      "status": "implemented",
+      "fingerprint": "query:entry_id:optional\nquery:limit:optional\nquery:list:optional\nquery:object:optional\nquery:offset:optional\nquery:record_id:optional"
+    },
+    "GET /v2/threads/{thread_id}": {
+      "status": "implemented",
+      "fingerprint": "path:thread_id:required\nquery:created_after:optional\nquery:cursor:optional\nquery:limit:optional"
     }
   }
 }
