@@ -21,6 +21,7 @@ import { createSqlCommand } from './commands/sql';
 import { createSequenceCommand } from './commands/sequence';
 import { createFileCommand } from './commands/file';
 import { createRecordingCommand } from './commands/recording';
+import { createActivityCommand } from './commands/activity';
 import { applyRootOptions, RootOptions } from './utils/root-options';
 
 const packageJson = JSON.parse(
@@ -63,5 +64,6 @@ program.addCommand(createSqlCommand());
 program.addCommand(createSequenceCommand());
 program.addCommand(createFileCommand());
 program.addCommand(createRecordingCommand());
+program.addCommand(createActivityCommand());
 
 program.parse();

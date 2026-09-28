@@ -895,6 +895,14 @@ attio recording create <meeting-id> --video-url https://example.com/call.mp4
 attio recording transcript <meeting-id> <recording-id>
 attio recording delete <meeting-id> <recording-id>
 ```
+
+### Activities
+
+```bash
+attio activity list
+attio activity create --api-slug site_visits --singular "Site visit" --plural "Site visits" --extends interactions
+attio activity delete <slug>
+```
 ```
 
 **Examples:**

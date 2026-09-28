@@ -1,6 +1,7 @@
 {
   "specUrl": "https://api.attio.com/openapi/api",
   "coveredTags": [
+    "Activities",
     "Attributes",
     "Call recordings",
     "Comments",
@@ -22,7 +23,6 @@
     "Workspace members"
   ],
   "ignoredTags": {
-    "Activities": "Activity logging is outside this CLI.",
     "Activity records": "Activity records are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
@@ -367,6 +367,26 @@
     "GET /v2/meetings/{meeting_id}/call_recordings/{call_recording_id}/transcript": {
       "status": "implemented",
       "fingerprint": "path:call_recording_id:required\npath:meeting_id:required\nquery:cursor:optional"
+    },
+    "GET /v2/activities": {
+      "status": "implemented",
+      "fingerprint": "query:cursor:optional\nquery:limit:optional"
+    },
+    "POST /v2/activities": {
+      "status": "implemented",
+      "fingerprint": "body.data.api_slug:required\nbody.data.extends:required\nbody.data.plural_noun:required\nbody.data.singular_noun:required"
+    },
+    "GET /v2/activities/{activity}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required"
+    },
+    "PATCH /v2/activities/{activity}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\nbody.data.api_slug:optional\nbody.data.plural_noun:optional\nbody.data.singular_noun:optional"
+    },
+    "DELETE /v2/activities/{activity}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required"
     }
   }
 }
