@@ -47,6 +47,32 @@ export class MeetingEndpoints {
     };
   }
 
+  async createMeeting(data: {
+    data: Record<string, unknown>;
+  }): Promise<Meeting> {
+    const response = await this.client.post('/meetings', data);
+    const dataResponse = response as { data: unknown };
+    return validate(MeetingSchema, dataResponse.data);
+  }
+
+  async updateLinkedRecords(
+    meetingId: string,
+    linkedRecords: Array<{ object: string; record_id: string }>,
+    mode: 'patch' | 'put'
+  ): Promise<Meeting> {
+    const body = { data: { linked_records: linkedRecords } };
+    const response =
+      mode === 'patch'
+        ? await this.client.patch(`/meetings/${meetingId}`, body)
+        : await this.client.put(`/meetings/${meetingId}`, body);
+    const dataResponse = response as { data: unknown };
+    return validate(MeetingSchema, dataResponse.data);
+  }
+
+  async deleteMeeting(meetingId: string): Promise<void> {
+    await this.client.delete(`/meetings/${meetingId}`);
+  }
+
   async getMeeting(meetingId: string): Promise<Meeting> {
     const response = await this.client.get(`/meetings/${meetingId}`);
     const dataResponse = response as { data: unknown };

@@ -33,8 +33,8 @@
       "fingerprint": "path:entry_id:required\npath:list:required"
     },
     "DELETE /v2/meetings/{meeting_id}": {
-      "status": "deferred",
-      "reason": "Meetings are read-only in this CLI."
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required"
     },
     "DELETE /v2/notes/{note_id}": {
       "status": "implemented",
@@ -165,8 +165,8 @@
       "fingerprint": "path:entry_id:required\npath:list:required\nbody.data.entry_values:required"
     },
     "PATCH /v2/meetings/{meeting_id}": {
-      "status": "deferred",
-      "reason": "Meetings are read-only in this CLI."
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required\nbody.data.linked_records:required"
     },
     "PATCH /v2/notes/{note_id}": {
       "status": "implemented",
@@ -209,8 +209,8 @@
       "fingerprint": "path:list:required\nbody.filter:optional\nbody.filter_view_id:optional\nbody.limit:optional\nbody.offset:optional\nbody.sorts:optional"
     },
     "POST /v2/meetings": {
-      "status": "deferred",
-      "reason": "Meetings are read-only in this CLI."
+      "status": "implemented",
+      "fingerprint": "body.data.description:required\nbody.data.end:required\nbody.data.is_all_day:required\nbody.data.linked_records:optional\nbody.data.participants:required\nbody.data.start:required\nbody.data.title:required"
     },
     "POST /v2/notes": {
       "status": "implemented",
@@ -253,8 +253,8 @@
       "fingerprint": "path:attribute:required\npath:entry_id:required\npath:list:required\nbody.data.replace_history:required\nbody.data.values:required"
     },
     "PUT /v2/meetings/{meeting_id}": {
-      "status": "deferred",
-      "reason": "Meetings are read-only in this CLI."
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required\nbody.data.linked_records:required"
     },
     "PUT /v2/objects/{object}/records": {
       "status": "implemented",

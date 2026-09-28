@@ -6,10 +6,11 @@ import { formatJson } from '../formatters/json';
 import { formatGenericTable } from '../formatters/table';
 import { formatCsv } from '../formatters/csv';
 import { reportError } from '../utils/cli-error';
+import { present, readJson } from './present';
 
 export function createMeetingCommand(): Command {
   const meeting = new Command('meeting').description(
-    'View meetings (read-only)'
+    'View and manage meetings'
   );
 
   // List meetings
@@ -110,6 +111,118 @@ export function createMeetingCommand(): Command {
         } else {
           console.log(formatJson(m));
         }
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  meeting
+    .command('create')
+    .description('Create a meeting')
+    .requiredOption('--title <title>', 'Meeting title')
+    .requiredOption('--description <text>', 'Meeting description')
+    .option('--start <iso>', 'Start datetime')
+    .option('--end <iso>', 'End datetime')
+    .option('--timezone <iana>', 'IANA timezone for the start and end')
+    .option('--all-day', 'Create an all-day meeting')
+    .option('--start-date <date>', 'All-day start date, YYYY-MM-DD')
+    .option('--end-date <date>', 'All-day end date, YYYY-MM-DD')
+    .option('--participants <json>', 'Participant array as JSON')
+    .option('--linked-records <json>', 'Linked records as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (options) => {
+      try {
+        const allDay = Boolean(options.allDay);
+        let start: Record<string, unknown>;
+        let end: Record<string, unknown>;
+        if (allDay) {
+          if (!options.startDate || !options.endDate) {
+            throw new Error('--all-day requires --start-date and --end-date');
+          }
+          start = { date: options.startDate };
+          end = { date: options.endDate };
+        } else {
+          if (!options.start || !options.end) {
+            throw new Error('Provide --start and --end, or use --all-day');
+          }
+          start = {
+            datetime: options.start,
+            timezone: options.timezone ?? null,
+          };
+          end = { datetime: options.end, timezone: options.timezone ?? null };
+        }
+        const data: Record<string, unknown> = {
+          title: options.title,
+          description: options.description,
+          is_all_day: allDay,
+          start,
+          end,
+        };
+        if (options.participants) {
+          data.participants = readJson(options.participants, '--participants');
+        }
+        if (options.linkedRecords) {
+          data.linked_records = readJson(
+            options.linkedRecords,
+            '--linked-records'
+          );
+        }
+        const client = new AttioClient(options.apiKey);
+        const meetingApi = new MeetingEndpoints(client);
+        const created = await meetingApi.createMeeting({ data });
+        present(created, options.format);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  const linkCommand = (
+    name: string,
+    mode: 'patch' | 'put',
+    description: string
+  ) => {
+    meeting
+      .command(name)
+      .description(description)
+      .argument('<meeting-id>', 'Meeting ID')
+      .requiredOption(
+        '--linked-records <json>',
+        'JSON array of {object, record_id}'
+      )
+      .option('--format <format>', 'Output format (json|table|csv)', 'json')
+      .action(async (meetingId: string, options) => {
+        try {
+          const linked = readJson(options.linkedRecords, '--linked-records');
+          if (!Array.isArray(linked)) {
+            throw new Error('--linked-records must be a JSON array');
+          }
+          const client = new AttioClient(options.apiKey);
+          const meetingApi = new MeetingEndpoints(client);
+          const updated = await meetingApi.updateLinkedRecords(
+            meetingId,
+            linked as Array<{ object: string; record_id: string }>,
+            mode
+          );
+          present(updated, options.format);
+        } catch (error) {
+          reportError(error);
+        }
+      });
+  };
+
+  linkCommand('link', 'patch', 'Add linked records to a meeting');
+  linkCommand('set-links', 'put', 'Replace the linked records on a meeting');
+
+  meeting
+    .command('delete')
+    .description('Delete a meeting')
+    .argument('<meeting-id>', 'Meeting ID')
+    .action(async (meetingId: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const meetingApi = new MeetingEndpoints(client);
+        await meetingApi.deleteMeeting(meetingId);
+        console.log(`Meeting ${meetingId} deleted successfully`);
       } catch (error) {
         reportError(error);
       }

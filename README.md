@@ -35,7 +35,7 @@ The longer install notes are in [Installation](#installation).
 - **Records** - Query, create, update, and delete people, companies, and deals with advanced filtering
 - **Lists & Entries** - Manage lists and their entries with attribute values
 - **Notes & Tasks** - Create and organize notes and tasks linked to records
-- **Meetings** - Read-only access to meeting data
+- **Meetings** - List, create, link, and delete meetings
 
 ### 🚀 Developer Experience
 - **Fully Typed** - TypeScript strict mode with Zod runtime validation
@@ -800,7 +800,7 @@ attio task delete task_abc123
 
 ### Meetings
 
-View meetings (read-only access).
+View and manage meetings.
 
 ```bash
 # List meetings
@@ -815,6 +815,15 @@ attio meeting list \
 
 # Get specific meeting
 attio meeting get <meeting-id> [--format json|table|csv]
+
+# Create a meeting
+attio meeting create --title "Kickoff" --description "Agenda" \
+  --start 2026-10-01T15:00:00Z --end 2026-10-01T15:30:00Z
+
+# Link records, replace links, or delete
+attio meeting link <meeting-id> --linked-records '[{"object":"people","record_id":"<uuid>"}]'
+attio meeting set-links <meeting-id> --linked-records '[]'
+attio meeting delete <meeting-id>
 ```
 
 **Examples:**
