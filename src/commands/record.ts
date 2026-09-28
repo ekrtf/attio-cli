@@ -254,6 +254,28 @@ export function createRecordCommand(): Command {
     });
 
   record
+    .command('entries')
+    .description('List the list entries a record belongs to')
+    .argument('<object>', 'Object slug')
+    .argument('<record-id>', 'Record ID')
+    .option('--limit <number>', 'Maximum entries to return', parseInt)
+    .option('--offset <number>', 'Number of entries to skip', parseInt)
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (objectSlug: string, recordId: string, options) => {
+      try {
+        const client = new AttioClient(options.apiKey);
+        const recordApi = new RecordEndpoints(client);
+        const entries = await recordApi.listEntries(objectSlug, recordId, {
+          limit: options.limit,
+          offset: options.offset,
+        });
+        present(entries, options.format);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  record
     .command('values')
     .description('List the value history of one attribute')
     .argument('<object>', 'Object slug')

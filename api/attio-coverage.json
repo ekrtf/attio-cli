@@ -121,8 +121,8 @@
       "fingerprint": "path:attribute:required\npath:object:required\npath:record_id:required\nquery:limit:optional\nquery:offset:optional\nquery:show_historic:optional"
     },
     "GET /v2/objects/{object}/records/{record_id}/entries": {
-      "status": "deferred",
-      "reason": "Listing the lists a record belongs to is not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "path:object:required\npath:record_id:required\nquery:limit:optional\nquery:offset:optional"
     },
     "GET /v2/objects/{object}/views": {
       "status": "implemented",

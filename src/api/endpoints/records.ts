@@ -5,6 +5,8 @@ import {
   AttioRecord,
   AttributeValueHistory,
   AttributeValueHistorySchema,
+  ListEntriesResponseSchema,
+  ListEntry,
 } from '../types';
 import { validate } from '../../utils/validation';
 
@@ -106,6 +108,22 @@ export class RecordEndpoints {
     );
     const dataResponse = response as { data: unknown };
     return validate(RecordSchema, dataResponse.data);
+  }
+
+  async listEntries(
+    objectSlug: string,
+    recordId: string,
+    options?: { limit?: number; offset?: number }
+  ): Promise<ListEntry[]> {
+    const params: Record<string, unknown> = {};
+    if (options?.limit) params.limit = options.limit;
+    if (options?.offset) params.offset = options.offset;
+    const response = await this.client.get(
+      `/objects/${objectSlug}/records/${recordId}/entries`,
+      params
+    );
+    const validated = validate(ListEntriesResponseSchema, response);
+    return validated.data;
   }
 
   async listAttributeValues(
