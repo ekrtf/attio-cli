@@ -852,6 +852,12 @@ attio webhook delete <webhook-id>
 attio thread list --object people --record-id <record-id>
 attio thread get <thread-id>
 ```
+
+### Current token
+
+```bash
+attio self
+```
 ```
 
 **Examples:**

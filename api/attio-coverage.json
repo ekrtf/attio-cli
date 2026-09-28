@@ -6,6 +6,7 @@
     "Entries",
     "Lists",
     "Meetings",
+    "Meta",
     "Notes",
     "Objects",
     "Records",
@@ -21,7 +22,6 @@
     "Files": "File upload is outside this CLI.",
     "Call recordings": "Call recordings are outside this CLI.",
     "Transcripts": "Transcripts are outside this CLI.",
-    "Meta": "Meta endpoints are outside this CLI.",
     "Sequences": "Sequences are outside this CLI.",
     "SQL": "The SQL endpoint is outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
@@ -307,6 +307,10 @@
     "GET /v2/threads/{thread_id}": {
       "status": "implemented",
       "fingerprint": "path:thread_id:required\nquery:created_after:optional\nquery:cursor:optional\nquery:limit:optional"
+    },
+    "GET /v2/self": {
+      "status": "implemented",
+      "fingerprint": ""
     }
   }
 }
