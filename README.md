@@ -835,6 +835,16 @@ attio comment create --content "Following up" --author-id <member-id> \
 attio comment get <comment-id>
 attio comment delete <comment-id>
 ```
+
+### Webhooks
+
+```bash
+attio webhook list
+attio webhook create --target-url https://example.com/hook --events record.created,note.created
+attio webhook get <webhook-id>
+attio webhook update <webhook-id> --events record.updated
+attio webhook delete <webhook-id>
+```
 ```
 
 **Examples:**

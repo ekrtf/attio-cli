@@ -10,6 +10,7 @@
     "Objects",
     "Records",
     "Tasks",
+    "Webhooks",
     "Workspace members"
   ],
   "ignoredTags": {
@@ -23,7 +24,6 @@
     "Sequences": "Sequences are outside this CLI.",
     "SQL": "The SQL endpoint is outside this CLI.",
     "Threads": "Threads are outside this CLI.",
-    "Webhooks": "Webhook management is outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -279,6 +279,26 @@
     "DELETE /v2/comments/{comment_id}": {
       "status": "implemented",
       "fingerprint": "path:comment_id:required"
+    },
+    "GET /v2/webhooks": {
+      "status": "implemented",
+      "fingerprint": "query:limit:optional\nquery:offset:optional"
+    },
+    "POST /v2/webhooks": {
+      "status": "implemented",
+      "fingerprint": "body.data.subscriptions:required\nbody.data.target_url:required"
+    },
+    "GET /v2/webhooks/{webhook_id}": {
+      "status": "implemented",
+      "fingerprint": "path:webhook_id:required"
+    },
+    "PATCH /v2/webhooks/{webhook_id}": {
+      "status": "implemented",
+      "fingerprint": "path:webhook_id:required\nbody.data.subscriptions:optional\nbody.data.target_url:optional"
+    },
+    "DELETE /v2/webhooks/{webhook_id}": {
+      "status": "implemented",
+      "fingerprint": "path:webhook_id:required"
     }
   }
 }

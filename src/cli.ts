@@ -13,6 +13,7 @@ import { createTaskCommand } from './commands/task';
 import { createMeetingCommand } from './commands/meeting';
 import { createAttributeCommand } from './commands/attribute';
 import { createCommentCommand } from './commands/comment';
+import { createWebhookCommand } from './commands/webhook';
 import { applyRootOptions, RootOptions } from './utils/root-options';
 
 const packageJson = JSON.parse(
@@ -47,5 +48,6 @@ program.addCommand(createTaskCommand());
 program.addCommand(createMeetingCommand());
 program.addCommand(createAttributeCommand());
 program.addCommand(createCommentCommand());
+program.addCommand(createWebhookCommand());
 
 program.parse();
