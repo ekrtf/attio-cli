@@ -254,6 +254,58 @@ export function createRecordCommand(): Command {
     });
 
   record
+    .command('search')
+    .description('Search records across objects')
+    .requiredOption('--query <text>', 'Search text')
+    .requiredOption(
+      '--objects <slugs>',
+      'Comma-separated object slugs, for example people,companies'
+    )
+    .option('--limit <number>', 'Maximum results', parseInt)
+    .option(
+      '--as <who>',
+      'workspace, or a member id or email to search as that person',
+      'workspace'
+    )
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (options) => {
+      try {
+        const objects = String(options.objects)
+          .split(',')
+          .map((part: string) => part.trim())
+          .filter(Boolean);
+        if (objects.length === 0) {
+          throw new Error('--objects needs at least one slug');
+        }
+        let requestAs:
+          | { type: 'workspace' }
+          | { type: 'workspace-member'; workspace_member_id: string }
+          | { type: 'workspace-member'; email_address: string };
+        if (options.as === 'workspace') {
+          requestAs = { type: 'workspace' };
+        } else if (String(options.as).includes('@')) {
+          requestAs = { type: 'workspace-member', email_address: options.as };
+        } else {
+          requestAs = {
+            type: 'workspace-member',
+            workspace_member_id: options.as,
+          };
+        }
+        const client = new AttioClient(options.apiKey);
+        const recordApi = new RecordEndpoints(client);
+        const page = await recordApi.searchRecords({
+          query: options.query,
+          objects,
+          request_as: requestAs,
+          limit: options.limit,
+        });
+        present(page.items, options.format, page.nextCursor);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  record
     .command('merge')
     .description('Merge two records of the same object')
     .argument('<object>', 'Object slug')

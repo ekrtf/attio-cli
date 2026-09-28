@@ -233,8 +233,8 @@
       "fingerprint": "path:object:required\nbody.filter:optional\nbody.filter_view_id:optional\nbody.limit:optional\nbody.offset:optional\nbody.sorts:optional"
     },
     "POST /v2/objects/records/search": {
-      "status": "deferred",
-      "reason": "Record merge and workspace search are not exposed by this CLI."
+      "status": "implemented",
+      "fingerprint": "body.limit:optional\nbody.objects:required\nbody.query:required\nbody.request_as:required"
     },
     "POST /v2/tasks": {
       "status": "implemented",

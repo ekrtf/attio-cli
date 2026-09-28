@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AttioClient } from '../client';
-import { readData } from '../response';
+import { readData, readPage, Page } from '../response';
 import {
   RecordsResponseSchema,
   RecordSchema,
@@ -110,6 +110,19 @@ export class RecordEndpoints {
     );
     const dataResponse = response as { data: unknown };
     return validate(RecordSchema, dataResponse.data);
+  }
+
+  async searchRecords(query: {
+    query: string;
+    objects: string[];
+    request_as:
+      | { type: 'workspace' }
+      | { type: 'workspace-member'; workspace_member_id: string }
+      | { type: 'workspace-member'; email_address: string };
+    limit?: number;
+  }): Promise<Page> {
+    const response = await this.client.post('/objects/records/search', query);
+    return readPage(response);
   }
 
   async mergeRecords(
