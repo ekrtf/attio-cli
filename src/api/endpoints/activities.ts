@@ -45,4 +45,75 @@ export class ActivityEndpoints {
   async deleteActivity(activity: string): Promise<void> {
     await this.client.delete(`/activities/${activity}`);
   }
+
+  async queryRecords(
+    activity: string,
+    body: {
+      filter?: unknown;
+      sorts?: unknown;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Page> {
+    return readPage(
+      await this.client.post(`/activities/${activity}/records/query`, body)
+    );
+  }
+
+  async getRecord(
+    activity: string,
+    recordId: string
+  ): Promise<Record<string, unknown>> {
+    return readRecord(
+      await this.client.get(`/activities/${activity}/records/${recordId}`)
+    );
+  }
+
+  async createRecord(
+    activity: string,
+    data: { data: { values: Record<string, unknown> } }
+  ): Promise<Record<string, unknown>> {
+    return readRecord(
+      await this.client.post(`/activities/${activity}/records`, data)
+    );
+  }
+
+  async updateRecord(
+    activity: string,
+    recordId: string,
+    data: { data: { values: Record<string, unknown> } }
+  ): Promise<Record<string, unknown>> {
+    return readRecord(
+      await this.client.patch(
+        `/activities/${activity}/records/${recordId}`,
+        data
+      )
+    );
+  }
+
+  async replaceRecord(
+    activity: string,
+    recordId: string,
+    data: { data: { values: Record<string, unknown> } }
+  ): Promise<Record<string, unknown>> {
+    return readRecord(
+      await this.client.put(`/activities/${activity}/records/${recordId}`, data)
+    );
+  }
+
+  async assertRecord(
+    activity: string,
+    matchingAttribute: string,
+    data: { data: { values: Record<string, unknown> } }
+  ): Promise<Record<string, unknown>> {
+    return readRecord(
+      await this.client.put(`/activities/${activity}/records`, data, {
+        matching_attribute: matchingAttribute,
+      })
+    );
+  }
+
+  async deleteRecord(activity: string, recordId: string): Promise<void> {
+    await this.client.delete(`/activities/${activity}/records/${recordId}`);
+  }
 }

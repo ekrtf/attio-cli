@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { AttioClient } from '../api/client';
 import { ActivityEndpoints } from '../api/endpoints/activities';
 import { reportError } from '../utils/cli-error';
-import { present } from './present';
+import { present, readJson } from './present';
 
 const EXTENDS = ['activities', 'interactions', 'calls', 'emails'] as const;
 
@@ -116,6 +116,167 @@ export function createActivityCommand(): Command {
         const api = new ActivityEndpoints(new AttioClient(options.apiKey));
         await api.deleteActivity(slug);
         console.log(`Activity ${slug} deleted successfully`);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  const records = activity
+    .command('records')
+    .description('Manage records for an activity');
+
+  records
+    .command('query')
+    .description('Query activity records')
+    .argument('<activity>', 'Activity slug or ID')
+    .option('--filter <json>', 'Filter object as JSON')
+    .option('--sort <json>', 'Sort array as JSON')
+    .option('--limit <number>', 'Maximum records to return', parseInt)
+    .option('--offset <number>', 'Number of records to skip', parseInt)
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, options) => {
+      try {
+        const api = new ActivityEndpoints(new AttioClient(options.apiKey));
+        const page = await api.queryRecords(slug, {
+          filter: options.filter
+            ? readJson(options.filter, '--filter')
+            : undefined,
+          sorts: options.sort ? readJson(options.sort, '--sort') : undefined,
+          limit: options.limit,
+          offset: options.offset,
+        });
+        present(page.items, options.format, page.nextCursor);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  records
+    .command('get')
+    .description('Get an activity record')
+    .argument('<activity>', 'Activity slug or ID')
+    .argument('<record-id>', 'Record ID')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, recordId: string, options) => {
+      try {
+        const api = new ActivityEndpoints(new AttioClient(options.apiKey));
+        present(await api.getRecord(slug, recordId), options.format);
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  const writeValues = async (
+    options: { data: string; apiKey?: string; format: string },
+    write: (
+      api: ActivityEndpoints,
+      values: Record<string, unknown>
+    ) => Promise<Record<string, unknown>>
+  ) => {
+    const values = readJson(options.data, '--data');
+    if (
+      typeof values !== 'object' ||
+      values === null ||
+      Array.isArray(values)
+    ) {
+      throw new Error('--data must be a JSON object of attribute values');
+    }
+    const api = new ActivityEndpoints(new AttioClient(options.apiKey));
+    present(
+      await write(api, values as Record<string, unknown>),
+      options.format
+    );
+  };
+
+  records
+    .command('create')
+    .description('Create an activity record')
+    .argument('<activity>', 'Activity slug or ID')
+    .requiredOption('--data <json>', 'Attribute values as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, options) => {
+      try {
+        await writeValues(options, (api, values) =>
+          api.createRecord(slug, { data: { values } })
+        );
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  records
+    .command('update')
+    .description('Update an activity record')
+    .argument('<activity>', 'Activity slug or ID')
+    .argument('<record-id>', 'Record ID')
+    .requiredOption('--data <json>', 'Attribute values as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, recordId: string, options) => {
+      try {
+        await writeValues(options, (api, values) =>
+          api.updateRecord(slug, recordId, { data: { values } })
+        );
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  records
+    .command('replace')
+    .description('Replace an activity record')
+    .argument('<activity>', 'Activity slug or ID')
+    .argument('<record-id>', 'Record ID')
+    .requiredOption('--data <json>', 'Attribute values as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, recordId: string, options) => {
+      try {
+        await writeValues(options, (api, values) =>
+          api.replaceRecord(slug, recordId, { data: { values } })
+        );
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  records
+    .command('assert')
+    .description('Upsert an activity record by a matching attribute')
+    .argument('<activity>', 'Activity slug or ID')
+    .requiredOption('--matching-attribute <slug>', 'Unique attribute to match')
+    .requiredOption('--data <json>', 'Attribute values as JSON')
+    .option('--format <format>', 'Output format (json|table|csv)', 'json')
+    .action(async (slug: string, options) => {
+      try {
+        const values = readJson(options.data, '--data');
+        if (
+          typeof values !== 'object' ||
+          values === null ||
+          Array.isArray(values)
+        ) {
+          throw new Error('--data must be a JSON object of attribute values');
+        }
+        const api = new ActivityEndpoints(new AttioClient(options.apiKey));
+        present(
+          await api.assertRecord(slug, options.matchingAttribute, {
+            data: { values: values as Record<string, unknown> },
+          }),
+          options.format
+        );
+      } catch (error) {
+        reportError(error);
+      }
+    });
+
+  records
+    .command('delete')
+    .description('Delete an activity record')
+    .argument('<activity>', 'Activity slug or ID')
+    .argument('<record-id>', 'Record ID')
+    .action(async (slug: string, recordId: string, options) => {
+      try {
+        const api = new ActivityEndpoints(new AttioClient(options.apiKey));
+        await api.deleteRecord(slug, recordId);
+        console.log(`Activity record ${recordId} deleted successfully`);
       } catch (error) {
         reportError(error);
       }

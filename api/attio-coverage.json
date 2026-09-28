@@ -2,6 +2,7 @@
   "specUrl": "https://api.attio.com/openapi/api",
   "coveredTags": [
     "Activities",
+    "Activity records",
     "Attributes",
     "Call recordings",
     "Comments",
@@ -23,7 +24,6 @@
     "Workspace members"
   ],
   "ignoredTags": {
-    "Activity records": "Activity records are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -387,6 +387,34 @@
     "DELETE /v2/activities/{activity}": {
       "status": "implemented",
       "fingerprint": "path:activity:required"
+    },
+    "POST /v2/activities/{activity}/records": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\nbody.data.values:required"
+    },
+    "POST /v2/activities/{activity}/records/query": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\nbody.filter:optional\nbody.limit:optional\nbody.offset:optional\nbody.sorts:optional"
+    },
+    "GET /v2/activities/{activity}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\npath:record_id:required"
+    },
+    "PATCH /v2/activities/{activity}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\npath:record_id:required\nbody.data.values:required"
+    },
+    "PUT /v2/activities/{activity}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\npath:record_id:required\nbody.data.values:required"
+    },
+    "PUT /v2/activities/{activity}/records": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\nquery:matching_attribute:required\nbody.data.values:required"
+    },
+    "DELETE /v2/activities/{activity}/records/{record_id}": {
+      "status": "implemented",
+      "fingerprint": "path:activity:required\npath:record_id:required"
     }
   }
 }

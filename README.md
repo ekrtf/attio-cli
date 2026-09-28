@@ -902,6 +902,9 @@ attio recording delete <meeting-id> <recording-id>
 attio activity list
 attio activity create --api-slug site_visits --singular "Site visit" --plural "Site visits" --extends interactions
 attio activity delete <slug>
+attio activity records query <activity> --filter '<json>'
+attio activity records create <activity> --data '<values-json>'
+attio activity records assert <activity> --matching-attribute <slug> --data '<values-json>'
 ```
 ```
 
