@@ -2,6 +2,7 @@
   "specUrl": "https://api.attio.com/openapi/api",
   "coveredTags": [
     "Attributes",
+    "Call recordings",
     "Comments",
     "Emails",
     "Entries",
@@ -16,14 +17,13 @@
     "Sequences",
     "Tasks",
     "Threads",
+    "Transcripts",
     "Webhooks",
     "Workspace members"
   ],
   "ignoredTags": {
     "Activities": "Activity logging is outside this CLI.",
     "Activity records": "Activity records are outside this CLI.",
-    "Call recordings": "Call recordings are outside this CLI.",
-    "Transcripts": "Transcripts are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -347,6 +347,26 @@
     "GET /v2/files/{file_id}/download": {
       "status": "implemented",
       "fingerprint": "path:file_id:required"
+    },
+    "GET /v2/meetings/{meeting_id}/call_recordings": {
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required\nquery:cursor:optional\nquery:limit:optional"
+    },
+    "POST /v2/meetings/{meeting_id}/call_recordings": {
+      "status": "implemented",
+      "fingerprint": "path:meeting_id:required\nbody.data.transcript:optional\nbody.data.video_url:optional"
+    },
+    "GET /v2/meetings/{meeting_id}/call_recordings/{call_recording_id}": {
+      "status": "implemented",
+      "fingerprint": "path:call_recording_id:required\npath:meeting_id:required"
+    },
+    "DELETE /v2/meetings/{meeting_id}/call_recordings/{call_recording_id}": {
+      "status": "implemented",
+      "fingerprint": "path:call_recording_id:required\npath:meeting_id:required"
+    },
+    "GET /v2/meetings/{meeting_id}/call_recordings/{call_recording_id}/transcript": {
+      "status": "implemented",
+      "fingerprint": "path:call_recording_id:required\npath:meeting_id:required\nquery:cursor:optional"
     }
   }
 }

@@ -20,6 +20,7 @@ import { createEmailCommand } from './commands/email';
 import { createSqlCommand } from './commands/sql';
 import { createSequenceCommand } from './commands/sequence';
 import { createFileCommand } from './commands/file';
+import { createRecordingCommand } from './commands/recording';
 import { applyRootOptions, RootOptions } from './utils/root-options';
 
 const packageJson = JSON.parse(
@@ -61,5 +62,6 @@ program.addCommand(createEmailCommand());
 program.addCommand(createSqlCommand());
 program.addCommand(createSequenceCommand());
 program.addCommand(createFileCommand());
+program.addCommand(createRecordingCommand());
 
 program.parse();

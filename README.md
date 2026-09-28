@@ -886,6 +886,15 @@ attio file mkdir --object people --record-id <record-id> --name Documents
 attio file download-url <file-id>
 attio file delete <file-id>
 ```
+
+### Call recordings
+
+```bash
+attio recording list <meeting-id>
+attio recording create <meeting-id> --video-url https://example.com/call.mp4
+attio recording transcript <meeting-id> <recording-id>
+attio recording delete <meeting-id> <recording-id>
+```
 ```
 
 **Examples:**
