@@ -18,6 +18,7 @@ import { createThreadCommand } from './commands/thread';
 import { createSelfCommand } from './commands/self';
 import { createEmailCommand } from './commands/email';
 import { createSqlCommand } from './commands/sql';
+import { createSequenceCommand } from './commands/sequence';
 import { applyRootOptions, RootOptions } from './utils/root-options';
 
 const packageJson = JSON.parse(
@@ -57,5 +58,6 @@ program.addCommand(createThreadCommand());
 program.addCommand(createSelfCommand());
 program.addCommand(createEmailCommand());
 program.addCommand(createSqlCommand());
+program.addCommand(createSequenceCommand());
 
 program.parse();

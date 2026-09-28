@@ -12,6 +12,7 @@
     "Objects",
     "Records",
     "SQL",
+    "Sequences",
     "Tasks",
     "Threads",
     "Webhooks",
@@ -23,7 +24,6 @@
     "Files": "File upload is outside this CLI.",
     "Call recordings": "Call recordings are outside this CLI.",
     "Transcripts": "Transcripts are outside this CLI.",
-    "Sequences": "Sequences are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -319,6 +319,10 @@
     "POST /v2/sql": {
       "status": "implemented",
       "fingerprint": "body.sql:required"
+    },
+    "POST /v2/sequences/unsubscribed_emails": {
+      "status": "implemented",
+      "fingerprint": "body.data.email_addresses:required"
     }
   }
 }

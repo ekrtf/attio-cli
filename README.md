@@ -870,6 +870,12 @@ attio email list --linked-object people --linked-record-ids <record-id>
 ```bash
 attio sql --query "SELECT name FROM companies LIMIT 5"
 ```
+
+### Sequences
+
+```bash
+attio sequence unsubscribe --email person@example.com --email other@example.com
+```
 ```
 
 **Examples:**
