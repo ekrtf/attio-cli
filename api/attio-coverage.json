@@ -11,6 +11,7 @@
     "Notes",
     "Objects",
     "Records",
+    "SQL",
     "Tasks",
     "Threads",
     "Webhooks",
@@ -23,7 +24,6 @@
     "Call recordings": "Call recordings are outside this CLI.",
     "Transcripts": "Transcripts are outside this CLI.",
     "Sequences": "Sequences are outside this CLI.",
-    "SQL": "The SQL endpoint is outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
     "List views": "Saved views are outside this CLI."
   },
@@ -315,6 +315,10 @@
     "GET /v2/emails": {
       "status": "implemented",
       "fingerprint": "query:cursor:optional\nquery:domain:optional\nquery:exclude_automated_participants:optional\nquery:limit:optional\nquery:linked_object:optional\nquery:linked_record_ids:optional\nquery:participants:optional\nquery:sent_after:optional\nquery:sent_before:optional"
+    },
+    "POST /v2/sql": {
+      "status": "implemented",
+      "fingerprint": "body.sql:required"
     }
   }
 }

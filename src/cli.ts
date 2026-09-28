@@ -17,6 +17,7 @@ import { createWebhookCommand } from './commands/webhook';
 import { createThreadCommand } from './commands/thread';
 import { createSelfCommand } from './commands/self';
 import { createEmailCommand } from './commands/email';
+import { createSqlCommand } from './commands/sql';
 import { applyRootOptions, RootOptions } from './utils/root-options';
 
 const packageJson = JSON.parse(
@@ -55,5 +56,6 @@ program.addCommand(createWebhookCommand());
 program.addCommand(createThreadCommand());
 program.addCommand(createSelfCommand());
 program.addCommand(createEmailCommand());
+program.addCommand(createSqlCommand());
 
 program.parse();

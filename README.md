@@ -864,6 +864,12 @@ attio self
 ```bash
 attio email list --linked-object people --linked-record-ids <record-id>
 ```
+
+### SQL
+
+```bash
+attio sql --query "SELECT name FROM companies LIMIT 5"
+```
 ```
 
 **Examples:**
