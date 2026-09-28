@@ -23,10 +23,7 @@
     "Webhooks",
     "Workspace members"
   ],
-  "ignoredTags": {
-    "Object views": "Saved views are outside this CLI.",
-    "List views": "Saved views are outside this CLI."
-  },
+  "ignoredTags": {},
   "operations": {
     "DELETE /v2/lists/{list}/entries/{entry_id}": {
       "status": "implemented",

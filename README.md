@@ -25,6 +25,20 @@ npm link
 
 The longer install notes are in [Installation](#installation).
 
+## Confirm the CLI matches the live Attio API
+
+Paste this to an agent in this repository:
+
+```text
+Confirm that this Attio CLI matches the live Attio REST API. Do not change files unless the check fails and I ask you to fix it.
+
+1. Run `npm run check:api`. That command fetches https://api.attio.com/openapi/api with no API key and compares it to api/attio-coverage.json and to every HTTP call in src/api/endpoints.
+2. A passing run means every operation in the live spec is implemented by this CLI, and every call in the source still has the same method, path, query parameters, and request body fields as the spec.
+3. Read api/attio-coverage.json. Report the implemented count. deferred must be empty. ignoredTags must be empty. A new Attio tag or operation that is not listed will fail the check.
+4. The check does not compare response bodies. Spot-check the Zod schemas in src/api/types.ts for records, lists, notes, tasks, and meetings against the live spec's component schemas, and say if a required response field would be dropped or rejected.
+5. If the check fails, quote the drift. Do not edit the coverage manifest to hide a new or changed operation unless the CLI is updated to match.
+```
+
 ---
 
 ## Features
