@@ -182,4 +182,33 @@ export class AttioClient {
       url: path,
     });
   }
+
+  async postForm<T>(path: string, form: FormData): Promise<T> {
+    const response = await this.axiosInstance.request<T>({
+      method: 'POST',
+      url: safeApiPath(path),
+      data: form,
+      headers: {
+        'Content-Type': false as unknown as string,
+      },
+      maxRedirects: 0,
+    });
+    return response.data;
+  }
+
+  async redirectLocation(path: string): Promise<string> {
+    const response = await this.axiosInstance.request({
+      method: 'GET',
+      url: safeApiPath(path),
+      maxRedirects: 0,
+      validateStatus: (status: number) => status === 302,
+    });
+    const header: unknown =
+      response.headers?.location ?? response.headers?.Location;
+    const location = Array.isArray(header) ? header[0] : header;
+    if (typeof location !== 'string' || location.length === 0) {
+      throw new Error('Download did not return a redirect location');
+    }
+    return location;
+  }
 }

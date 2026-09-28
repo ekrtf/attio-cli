@@ -876,6 +876,16 @@ attio sql --query "SELECT name FROM companies LIMIT 5"
 ```bash
 attio sequence unsubscribe --email person@example.com --email other@example.com
 ```
+
+### Files
+
+```bash
+attio file list --object people --record-id <record-id>
+attio file upload --file ./notes.pdf --object people --record-id <record-id>
+attio file mkdir --object people --record-id <record-id> --name Documents
+attio file download-url <file-id>
+attio file delete <file-id>
+```
 ```
 
 **Examples:**

@@ -5,6 +5,7 @@
     "Comments",
     "Emails",
     "Entries",
+    "Files",
     "Lists",
     "Meetings",
     "Meta",
@@ -21,7 +22,6 @@
   "ignoredTags": {
     "Activities": "Activity logging is outside this CLI.",
     "Activity records": "Activity records are outside this CLI.",
-    "Files": "File upload is outside this CLI.",
     "Call recordings": "Call recordings are outside this CLI.",
     "Transcripts": "Transcripts are outside this CLI.",
     "Object views": "Saved views are outside this CLI.",
@@ -323,6 +323,30 @@
     "POST /v2/sequences/unsubscribed_emails": {
       "status": "implemented",
       "fingerprint": "body.data.email_addresses:required"
+    },
+    "GET /v2/files": {
+      "status": "implemented",
+      "fingerprint": "query:cursor:optional\nquery:limit:optional\nquery:object:required\nquery:parent_folder_id:optional\nquery:record_id:required\nquery:storage_provider:optional"
+    },
+    "POST /v2/files": {
+      "status": "implemented",
+      "fingerprint": ""
+    },
+    "GET /v2/files/{file_id}": {
+      "status": "implemented",
+      "fingerprint": "path:file_id:required"
+    },
+    "DELETE /v2/files/{file_id}": {
+      "status": "implemented",
+      "fingerprint": "path:file_id:required"
+    },
+    "POST /v2/files/upload": {
+      "status": "implemented",
+      "fingerprint": ""
+    },
+    "GET /v2/files/{file_id}/download": {
+      "status": "implemented",
+      "fingerprint": "path:file_id:required"
     }
   }
 }
